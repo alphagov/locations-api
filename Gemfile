@@ -5,6 +5,7 @@ gem "rails", "6.1.4.1"
 gem "bootsnap"
 gem "gds-api-adapters"
 gem "govuk_app_config"
+gem "httparty"
 gem "pg"
 
 group :development do
