@@ -17,6 +17,7 @@ end
 
 group :development, :test do
   gem "byebug"
+  gem "climate_control"
   gem "govuk_test"
   gem "rspec-rails"
   gem "rubocop-govuk"
