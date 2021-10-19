@@ -22,4 +22,5 @@ group :development, :test do
   gem "govuk_test"
   gem "rspec-rails"
   gem "rubocop-govuk"
+  gem "webmock"
 end

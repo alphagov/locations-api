@@ -5,9 +5,11 @@ SimpleCov.start "rails"
 
 require File.expand_path("../config/environment", __dir__)
 require "rspec/rails"
+require "webmock/rspec"
 
 Dir[Rails.root.join("spec/support/**/*.rb")].sort.each { |f| require f }
 GovukTest.configure
+WebMock.disable_net_connect!(allow_localhost: true)
 
 RSpec.configure do |config|
   config.expose_dsl_globally = false
