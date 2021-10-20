@@ -15,6 +15,7 @@ module OsPlacesApi
         },
       )
 
+      raise InvalidPostcodeProvided if response.code == 400
       raise ExpiredAccessToken if response.code == 401
 
       JSON.parse(response)["results"]

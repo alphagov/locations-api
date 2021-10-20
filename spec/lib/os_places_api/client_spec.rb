@@ -64,6 +64,19 @@ RSpec.describe OsPlacesApi::Client do
       expect(client.locations_for_postcode(postcode)).to eq(results)
     end
 
+    it "raises an exception if an invalid postcode is supplied" do
+      api_response = {
+        "error": {
+          "statuscode": 400,
+          "message": "Requested postcode must contain a minimum of the sector plus 1 digit of the district e.g. SO1. Requested postcode was sausage",
+        },
+      }
+
+      stub_request(:get, api_endpoint).to_return(status: 400, body: api_response.to_json)
+
+      expect { client.locations_for_postcode(postcode) }.to raise_error(OsPlacesApi::InvalidPostcodeProvided)
+    end
+
     it "raises an exception if the access token has expired" do
       api_response = {
         "fault": {
