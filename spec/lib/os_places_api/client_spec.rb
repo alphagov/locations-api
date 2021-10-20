@@ -7,6 +7,7 @@ RSpec.describe OsPlacesApi::Client do
     end
 
     let(:postcode) { "E18QS" }
+    let(:api_endpoint) { "https://api.os.uk/search/places/v1/postcode?postcode=#{postcode}" }
 
     it "should return results for the provided postcode" do
       results = [
@@ -58,10 +59,23 @@ RSpec.describe OsPlacesApi::Client do
         },
         "results": results,
       }
-      stub_request(:get, "https://api.os.uk/search/places/v1/postcode?postcode=#{postcode}")
-        .to_return(status: 200, body: api_response.to_json)
+      stub_request(:get, api_endpoint).to_return(status: 200, body: api_response.to_json)
 
       expect(client.locations_for_postcode(postcode)).to eq(results)
+    end
+
+    it "raises an exception if the access token has expired" do
+      api_response = {
+        "fault": {
+          "faultstring": "Access Token expired",
+          "detail": {
+            "errorcode": "keymanagement.service.access_token_expired",
+          },
+        },
+      }
+      stub_request(:get, api_endpoint).to_return(status: 401, body: api_response.to_json)
+
+      expect { client.locations_for_postcode(postcode) }.to raise_error(OsPlacesApi::ExpiredAccessToken)
     end
   end
 end

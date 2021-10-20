@@ -15,6 +15,8 @@ module OsPlacesApi
         },
       )
 
+      raise ExpiredAccessToken if response.code == 401
+
       JSON.parse(response)["results"]
     end
   end
