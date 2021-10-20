@@ -15,14 +15,7 @@ module OsPlacesApi
         },
       )
 
-      raise InvalidPostcodeProvided if response.code == 400
-      raise ExpiredAccessToken if response.code == 401
-      raise RequestForbidden if response.code == 403
-      raise RequestNotFound if response.code == 404
-      raise MethodNotAllowed if response.code == 405
-      raise RateLimitExceeded if response.code == 429
-      raise InternalServerError if response.code == 500
-      raise ServiceUnavailable if response.code == 503
+      validate_response_code(response)
 
       begin
         json = JSON.parse(response)
@@ -32,6 +25,19 @@ module OsPlacesApi
       rescue JSON::ParserError
         raise UnexpectedResponse
       end
+    end
+
+  private
+
+    def validate_response_code(response)
+      raise InvalidPostcodeProvided if response.code == 400
+      raise ExpiredAccessToken if response.code == 401
+      raise RequestForbidden if response.code == 403
+      raise RequestNotFound if response.code == 404
+      raise MethodNotAllowed if response.code == 405
+      raise RateLimitExceeded if response.code == 429
+      raise InternalServerError if response.code == 500
+      raise ServiceUnavailable if response.code == 503
     end
   end
 end
