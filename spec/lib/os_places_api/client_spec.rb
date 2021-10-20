@@ -90,5 +90,47 @@ RSpec.describe OsPlacesApi::Client do
 
       expect { client.locations_for_postcode(postcode) }.to raise_error(OsPlacesApi::ExpiredAccessToken)
     end
+
+    it "raises an exception if the request is forbidden" do
+      stub_request(:get, api_endpoint).to_return(status: 403)
+
+      expect { client.locations_for_postcode(postcode) }.to raise_error(OsPlacesApi::RequestForbidden)
+    end
+
+    it "raises an exception if the request cannot resolve" do
+      stub_request(:get, api_endpoint).to_return(status: 404)
+
+      expect { client.locations_for_postcode(postcode) }.to raise_error(OsPlacesApi::RequestNotFound)
+    end
+
+    it "raises an exception if the request method is not allowed" do
+      stub_request(:get, api_endpoint).to_return(status: 405)
+
+      expect { client.locations_for_postcode(postcode) }.to raise_error(OsPlacesApi::MethodNotAllowed)
+    end
+
+    it "raises an exception if rate limit exceeded" do
+      stub_request(:get, api_endpoint).to_return(status: 429)
+
+      expect { client.locations_for_postcode(postcode) }.to raise_error(OsPlacesApi::RateLimitExceeded)
+    end
+
+    it "raises an exception if OS Places API has an internal server error" do
+      api_response = {
+        "error": {
+          "statuscode": 500,
+          "message": "The provided request resulted in an internal server error.",
+        },
+      }
+      stub_request(:get, api_endpoint).to_return(status: 500, body: api_response.to_json)
+
+      expect { client.locations_for_postcode(postcode) }.to raise_error(OsPlacesApi::InternalServerError)
+    end
+
+    it "raises an exception if the OS Places API service is unavailable" do
+      stub_request(:get, api_endpoint).to_return(status: 503)
+
+      expect { client.locations_for_postcode(postcode) }.to raise_error(OsPlacesApi::ServiceUnavailable)
+    end
   end
 end
