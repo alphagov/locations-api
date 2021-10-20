@@ -132,5 +132,13 @@ RSpec.describe OsPlacesApi::Client do
 
       expect { client.locations_for_postcode(postcode) }.to raise_error(OsPlacesApi::ServiceUnavailable)
     end
+
+    it "raises an exception if the response isn't in the structure we expect" do
+      stub_request(:get, api_endpoint).to_return(status: 200, body: "foo")
+      expect { client.locations_for_postcode(postcode) }.to raise_error(OsPlacesApi::UnexpectedResponse)
+
+      stub_request(:get, api_endpoint).to_return(status: 200, body: "{}")
+      expect { client.locations_for_postcode(postcode) }.to raise_error(OsPlacesApi::UnexpectedResponse)
+    end
   end
 end

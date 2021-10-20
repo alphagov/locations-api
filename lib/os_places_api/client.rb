@@ -24,7 +24,14 @@ module OsPlacesApi
       raise InternalServerError if response.code == 500
       raise ServiceUnavailable if response.code == 503
 
-      JSON.parse(response)["results"]
+      begin
+        json = JSON.parse(response)
+        raise UnexpectedResponse if json["results"].nil?
+
+        json["results"]
+      rescue JSON::ParserError
+        raise UnexpectedResponse
+      end
     end
   end
 end

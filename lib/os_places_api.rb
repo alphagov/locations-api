@@ -18,4 +18,6 @@ module OsPlacesApi
   class RequestNotFound < RuntimeError; end
 
   class ServiceUnavailable < RuntimeError; end
+
+  class UnexpectedResponse < RuntimeError; end
 end
