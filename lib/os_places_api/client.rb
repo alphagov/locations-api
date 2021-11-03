@@ -10,7 +10,7 @@ module OsPlacesApi
       response = HTTParty.get(
         "https://api.os.uk/search/places/v1/postcode",
         {
-          query: { postcode: postcode },
+          query: { postcode: postcode, output_srs: "WGS84" },
           headers: { "Authorization": "Bearer #{@token_manager.access_token}" },
         },
       )

@@ -7,7 +7,7 @@ RSpec.describe OsPlacesApi::Client do
     end
 
     let(:postcode) { "E18QS" }
-    let(:api_endpoint) { "https://api.os.uk/search/places/v1/postcode?postcode=#{postcode}" }
+    let(:api_endpoint) { "https://api.os.uk/search/places/v1/postcode?postcode=#{postcode}&output_srs=WGS84" }
 
     it "should return results for the provided postcode" do
       results = [
@@ -23,6 +23,8 @@ RSpec.describe OsPlacesApi::Client do
             "RPC" => "2",
             "X_COORDINATE" => 533_813.0,
             "Y_COORDINATE" => 181_262.0,
+            "LNG" => -0.0729933,
+            "LAT" => 51.5144547,
             "STATUS" => "APPROVED",
             "LOGICAL_STATUS_CODE" => "1",
             "CLASSIFICATION_CODE" => "CO01",
@@ -46,7 +48,7 @@ RSpec.describe OsPlacesApi::Client do
       ]
       api_response = {
         "header": {
-          "uri": "https://api.os.uk/search/places/v1/postcode?postcode=#{postcode}",
+          "uri": "https://api.os.uk/search/places/v1/postcode?postcode=#{postcode}&output_srs=WGS84",
           "query": "postcode=#{postcode}",
           "offset": 0,
           "totalresults": 1, # really 12, but we've omitted the other 11 in `results` above
@@ -55,7 +57,7 @@ RSpec.describe OsPlacesApi::Client do
           "lr": "EN,CY",
           "maxresults": 100,
           "epoch": "87",
-          "output_srs": "EPSG:27700",
+          "output_srs": "WGS84",
         },
         "results": results,
       }
