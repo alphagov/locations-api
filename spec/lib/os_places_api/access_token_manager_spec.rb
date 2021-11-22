@@ -46,8 +46,7 @@ RSpec.describe OsPlacesApi::AccessTokenManager do
   end
 
   def init_token_manager(os_places_api_key:, os_places_api_secret:)
-    ClimateControl.modify(OS_PLACES_API_KEY: os_places_api_key, OS_PLACES_API_SECRET: os_places_api_secret) do
-      described_class.new
-    end
+    ENV.update(OS_PLACES_API_KEY: os_places_api_key, OS_PLACES_API_SECRET: os_places_api_secret)
+    described_class.new
   end
 end
