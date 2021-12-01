@@ -18,10 +18,12 @@ module OsPlacesApi
       validate_response_code(response)
 
       begin
-        json = JSON.parse(response)
+        json = JSON.parse(response.body)
         raise UnexpectedResponse if json["results"].nil?
 
-        json["results"]
+        json["results"].map do |result|
+          LocationBuilder.new(result).build_location
+        end
       rescue JSON::ParserError
         raise UnexpectedResponse
       end
