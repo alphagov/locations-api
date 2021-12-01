@@ -44,4 +44,27 @@ RSpec.describe "Locations V1 API" do
       expect(response.body).to eq locations.to_json
     end
   end
+
+  context "Client request validation" do
+    let(:expected_validation_response) do
+      { errors: { postcode: ["This postcode is invalid"] } }.to_json
+    end
+
+    context "Postcode is incorrect" do
+      let(:postcode) { "AAA 1AA" }
+      it "Should return error when postcode is incorrect" do
+        get "/v1/locations?postcode=#{postcode}"
+
+        expect(response.body).to eq expected_validation_response
+      end
+    end
+
+    context "Postcode is not provided" do
+      it "Should return error when postcode is not provided" do
+        get "/v1/locations"
+
+        expect(response.body).to eq expected_validation_response
+      end
+    end
+  end
 end
