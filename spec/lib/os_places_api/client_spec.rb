@@ -10,6 +10,13 @@ RSpec.describe OsPlacesApi::Client do
     let(:api_endpoint) { "https://api.os.uk/search/places/v1/postcode?postcode=#{postcode}&output_srs=WGS84" }
 
     it "should return results for the provided postcode" do
+      locations = [
+        Location.new(address: "1, WHITECHAPEL HIGH STREET, LONDON, E1 8QS",
+                     latitude: 51.5144547,
+                     local_custodian_code: 5900,
+                     longitude: -0.0729933,
+                     postcode: "E1 8QS"),
+      ]
       results = [
         {
           "DPA" => {
@@ -63,7 +70,7 @@ RSpec.describe OsPlacesApi::Client do
       }
       stub_request(:get, api_endpoint).to_return(status: 200, body: api_response.to_json)
 
-      expect(client.locations_for_postcode(postcode)).to eq(results)
+      expect(client.locations_for_postcode(postcode).as_json).to eq(locations.as_json)
     end
 
     it "raises an exception if an invalid postcode is supplied" do

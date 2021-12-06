@@ -85,6 +85,7 @@ RSpec.describe PostcodeValidator do
       "TKCA 1ZZ",
       "VG1110",
       "VG 1ZZ",
+      nil,
     ]
   end
 
