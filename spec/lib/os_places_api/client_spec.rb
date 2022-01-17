@@ -5,19 +5,10 @@ RSpec.describe OsPlacesApi::Client do
     let(:client) do
       described_class.new(instance_double("AccessTokenManager", access_token: "some token"))
     end
-
     let(:postcode) { "E18QS" }
-    let(:api_endpoint) { "https://api.os.uk/search/places/v1/postcode?postcode=#{postcode}&output_srs=WGS84" }
-
-    it "should return results for the provided postcode" do
-      locations = [
-        Location.new(address: "1, WHITECHAPEL HIGH STREET, LONDON, E1 8QS",
-                     latitude: 51.5144547,
-                     local_custodian_code: 5900,
-                     longitude: -0.0729933,
-                     postcode: "E1 8QS"),
-      ]
-      results = [
+    let(:api_endpoint) { "https://api.os.uk/search/places/v1/postcode?output_srs=WGS84&postcode=#{postcode}" }
+    let(:os_places_api_results) do
+      [
         {
           "DPA" => {
             "UPRN" => "6714279",
@@ -53,101 +44,134 @@ RSpec.describe OsPlacesApi::Client do
         },
         # subsequent results omitted for brevity
       ]
-      api_response = {
-        "header": {
-          "uri": "https://api.os.uk/search/places/v1/postcode?postcode=#{postcode}&output_srs=WGS84",
-          "query": "postcode=#{postcode}",
-          "offset": 0,
-          "totalresults": 1, # really 12, but we've omitted the other 11 in `results` above
-          "format": "JSON",
-          "dataset": "DPA",
-          "lr": "EN,CY",
-          "maxresults": 100,
-          "epoch": "87",
-          "output_srs": "WGS84",
-        },
-        "results": results,
-      }
-      stub_request(:get, api_endpoint).to_return(status: 200, body: api_response.to_json)
-
-      expect(client.locations_for_postcode(postcode).as_json).to eq(locations.as_json)
+    end
+    let(:location) do
+      Location.new(address: "1, WHITECHAPEL HIGH STREET, LONDON, E1 8QS",
+                   latitude: 51.5144547,
+                   local_custodian_code: 5900,
+                   longitude: -0.0729933,
+                   postcode: "E1 8QS")
     end
 
-    it "raises an exception if an invalid postcode is supplied" do
-      api_response = {
-        "error": {
-          "statuscode": 400,
-          "message": "Requested postcode must contain a minimum of the sector plus 1 digit of the district e.g. SO1. Requested postcode was sausage",
-        },
-      }
+    context "the postcode doesn't exist in the database" do
+      before :each do
+        Postcode.where(postcode: postcode).map(&:destroy)
+      end
 
-      stub_request(:get, api_endpoint).to_return(status: 400, body: api_response.to_json)
-
-      expect { client.locations_for_postcode(postcode) }.to raise_error(OsPlacesApi::InvalidPostcodeProvided)
-    end
-
-    it "raises an exception if the access token has expired" do
-      api_response = {
-        "fault": {
-          "faultstring": "Access Token expired",
-          "detail": {
-            "errorcode": "keymanagement.service.access_token_expired",
+      it "should query OS Places API and return results" do
+        api_response = {
+          "header": {
+            "uri": api_endpoint,
+            "query": "postcode=#{postcode}",
+            "offset": 0,
+            "totalresults": 1, # really 12, but we've omitted the other 11 in `results` above
+            "format": "JSON",
+            "dataset": "DPA",
+            "lr": "EN,CY",
+            "maxresults": 100,
+            "epoch": "87",
+            "output_srs": "WGS84",
           },
-        },
-      }
-      stub_request(:get, api_endpoint).to_return(status: 401, body: api_response.to_json)
+          "results": os_places_api_results,
+        }
+        stub_request(:get, api_endpoint)
+          .to_return(status: 200, body: api_response.to_json)
 
-      expect { client.locations_for_postcode(postcode) }.to raise_error(OsPlacesApi::ExpiredAccessToken)
+        expect(client.locations_for_postcode(postcode).as_json).to eq([location].as_json)
+      end
+
+      it "raises an exception if the access token has expired" do
+        api_response = {
+          "fault": {
+            "faultstring": "Access Token expired",
+            "detail": {
+              "errorcode": "keymanagement.service.access_token_expired",
+            },
+          },
+        }
+        stub_request(:get, api_endpoint).to_return(status: 401, body: api_response.to_json)
+
+        expect { client.locations_for_postcode(postcode) }.to raise_error(OsPlacesApi::ExpiredAccessToken)
+      end
+
+      it "raises an exception if the request is forbidden" do
+        stub_request(:get, api_endpoint).to_return(status: 403)
+
+        expect { client.locations_for_postcode(postcode) }.to raise_error(OsPlacesApi::RequestForbidden)
+      end
+
+      it "raises an exception if the request cannot resolve" do
+        stub_request(:get, api_endpoint).to_return(status: 404)
+
+        expect { client.locations_for_postcode(postcode) }.to raise_error(OsPlacesApi::RequestNotFound)
+      end
+
+      it "raises an exception if the request method is not allowed" do
+        stub_request(:get, api_endpoint).to_return(status: 405)
+
+        expect { client.locations_for_postcode(postcode) }.to raise_error(OsPlacesApi::MethodNotAllowed)
+      end
+
+      it "raises an exception if rate limit exceeded" do
+        stub_request(:get, api_endpoint).to_return(status: 429)
+
+        expect { client.locations_for_postcode(postcode) }.to raise_error(OsPlacesApi::RateLimitExceeded)
+      end
+
+      it "raises an exception if OS Places API has an internal server error" do
+        api_response = {
+          "error": {
+            "statuscode": 500,
+            "message": "The provided request resulted in an internal server error.",
+          },
+        }
+        stub_request(:get, api_endpoint).to_return(status: 500, body: api_response.to_json)
+
+        expect { client.locations_for_postcode(postcode) }.to raise_error(OsPlacesApi::InternalServerError)
+      end
+
+      it "raises an exception if the OS Places API service is unavailable" do
+        stub_request(:get, api_endpoint).to_return(status: 503)
+
+        expect { client.locations_for_postcode(postcode) }.to raise_error(OsPlacesApi::ServiceUnavailable)
+      end
+
+      it "raises an exception if the response isn't in the structure we expect" do
+        stub_request(:get, api_endpoint).to_return(status: 200, body: "foo")
+        expect { client.locations_for_postcode(postcode) }.to raise_error(OsPlacesApi::UnexpectedResponse)
+
+        stub_request(:get, api_endpoint).to_return(status: 200, body: "{}")
+        expect { client.locations_for_postcode(postcode) }.to raise_error(OsPlacesApi::UnexpectedResponse)
+      end
     end
 
-    it "raises an exception if the request is forbidden" do
-      stub_request(:get, api_endpoint).to_return(status: 403)
+    context "the postcode exists in the database" do
+      before do
+        Postcode.create(postcode: postcode, results: os_places_api_results)
+      end
 
-      expect { client.locations_for_postcode(postcode) }.to raise_error(OsPlacesApi::RequestForbidden)
+      it "should return the cached data" do
+        expect(a_request(:get, api_endpoint)).not_to have_been_made
+
+        expect(client.locations_for_postcode(postcode)).to eq([location])
+      end
     end
 
-    it "raises an exception if the request cannot resolve" do
-      stub_request(:get, api_endpoint).to_return(status: 404)
+    context "the postcode is invalid" do
+      let(:postcode) { "foo" }
 
-      expect { client.locations_for_postcode(postcode) }.to raise_error(OsPlacesApi::RequestNotFound)
-    end
+      it "raises an exception if an invalid postcode is supplied" do
+        api_response = {
+          "error": {
+            "statuscode": 400,
+            "message": "Requested postcode must contain a minimum of the sector plus 1 digit of the district e.g. SO1. Requested postcode was sausage",
+          },
+        }
 
-    it "raises an exception if the request method is not allowed" do
-      stub_request(:get, api_endpoint).to_return(status: 405)
+        stub_request(:get, api_endpoint).to_return(status: 400, body: api_response.to_json)
 
-      expect { client.locations_for_postcode(postcode) }.to raise_error(OsPlacesApi::MethodNotAllowed)
-    end
-
-    it "raises an exception if rate limit exceeded" do
-      stub_request(:get, api_endpoint).to_return(status: 429)
-
-      expect { client.locations_for_postcode(postcode) }.to raise_error(OsPlacesApi::RateLimitExceeded)
-    end
-
-    it "raises an exception if OS Places API has an internal server error" do
-      api_response = {
-        "error": {
-          "statuscode": 500,
-          "message": "The provided request resulted in an internal server error.",
-        },
-      }
-      stub_request(:get, api_endpoint).to_return(status: 500, body: api_response.to_json)
-
-      expect { client.locations_for_postcode(postcode) }.to raise_error(OsPlacesApi::InternalServerError)
-    end
-
-    it "raises an exception if the OS Places API service is unavailable" do
-      stub_request(:get, api_endpoint).to_return(status: 503)
-
-      expect { client.locations_for_postcode(postcode) }.to raise_error(OsPlacesApi::ServiceUnavailable)
-    end
-
-    it "raises an exception if the response isn't in the structure we expect" do
-      stub_request(:get, api_endpoint).to_return(status: 200, body: "foo")
-      expect { client.locations_for_postcode(postcode) }.to raise_error(OsPlacesApi::UnexpectedResponse)
-
-      stub_request(:get, api_endpoint).to_return(status: 200, body: "{}")
-      expect { client.locations_for_postcode(postcode) }.to raise_error(OsPlacesApi::UnexpectedResponse)
+        expect { client.locations_for_postcode(postcode) }.to raise_error(OsPlacesApi::InvalidPostcodeProvided)
+      end
     end
   end
 end
