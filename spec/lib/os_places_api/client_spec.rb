@@ -58,8 +58,8 @@ RSpec.describe OsPlacesApi::Client do
         Postcode.where(postcode: postcode).map(&:destroy)
       end
 
-      it "should query OS Places API and return results" do
-        api_response = {
+      let(:successful_response) do
+        {
           "header": {
             "uri": api_endpoint,
             "query": "postcode=#{postcode}",
@@ -74,10 +74,22 @@ RSpec.describe OsPlacesApi::Client do
           },
           "results": os_places_api_results,
         }
+      end
+
+      it "should query OS Places API and return results" do
         stub_request(:get, api_endpoint)
-          .to_return(status: 200, body: api_response.to_json)
+          .to_return(status: 200, body: successful_response.to_json)
 
         expect(client.locations_for_postcode(postcode).as_json).to eq([location].as_json)
+      end
+
+      it "should cache the response from a successful request" do
+        stub_request(:get, api_endpoint)
+          .to_return(status: 200, body: successful_response.to_json)
+
+        expect(Postcode.where(postcode: postcode).count).to eq(0)
+        client.locations_for_postcode(postcode)
+        expect(Postcode.where(postcode: postcode).count).to eq(1)
       end
 
       it "raises an exception if the access token has expired" do
