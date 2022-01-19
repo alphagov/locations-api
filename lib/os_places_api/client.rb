@@ -7,6 +7,10 @@ module OsPlacesApi
     end
 
     def locations_for_postcode(postcode)
+      if (record = Postcode.find_by(postcode: postcode))
+        return build_locations(record["results"])
+      end
+
       response = HTTParty.get(
         "https://api.os.uk/search/places/v1/postcode",
         {
@@ -21,9 +25,8 @@ module OsPlacesApi
         json = JSON.parse(response.body)
         raise UnexpectedResponse if json["results"].nil?
 
-        json["results"].map do |result|
-          LocationBuilder.new(result).build_location
-        end
+        Postcode.create!(postcode: postcode, results: json["results"]) unless Postcode.find_by(postcode: postcode)
+        build_locations(json["results"])
       rescue JSON::ParserError
         raise UnexpectedResponse
       end
@@ -40,6 +43,12 @@ module OsPlacesApi
       raise RateLimitExceeded if response.code == 429
       raise InternalServerError if response.code == 500
       raise ServiceUnavailable if response.code == 503
+    end
+
+    def build_locations(results)
+      results.map do |result|
+        LocationBuilder.new(result).build_location
+      end
     end
   end
 end
