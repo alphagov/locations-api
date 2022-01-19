@@ -25,7 +25,7 @@ module OsPlacesApi
         json = JSON.parse(response.body)
         raise UnexpectedResponse if json["results"].nil?
 
-        Postcode.create!(postcode: postcode, results: json["results"])
+        Postcode.create!(postcode: postcode, results: json["results"]) unless Postcode.find_by(postcode: postcode)
         build_locations(json["results"])
       rescue JSON::ParserError
         raise UnexpectedResponse

@@ -7,6 +7,23 @@ RSpec.describe OsPlacesApi::Client do
     end
     let(:postcode) { "E18QS" }
     let(:api_endpoint) { "https://api.os.uk/search/places/v1/postcode?output_srs=WGS84&postcode=#{postcode}" }
+    let(:successful_response) do
+      {
+        "header": {
+          "uri": api_endpoint,
+          "query": "postcode=#{postcode}",
+          "offset": 0,
+          "totalresults": 1, # really 12, but we've omitted the other 11 in `results` above
+          "format": "JSON",
+          "dataset": "DPA",
+          "lr": "EN,CY",
+          "maxresults": 100,
+          "epoch": "87",
+          "output_srs": "WGS84",
+        },
+        "results": os_places_api_results,
+      }
+    end
     let(:os_places_api_results) do
       [
         {
@@ -56,24 +73,6 @@ RSpec.describe OsPlacesApi::Client do
     context "the postcode doesn't exist in the database" do
       before :each do
         Postcode.where(postcode: postcode).map(&:destroy)
-      end
-
-      let(:successful_response) do
-        {
-          "header": {
-            "uri": api_endpoint,
-            "query": "postcode=#{postcode}",
-            "offset": 0,
-            "totalresults": 1, # really 12, but we've omitted the other 11 in `results` above
-            "format": "JSON",
-            "dataset": "DPA",
-            "lr": "EN,CY",
-            "maxresults": 100,
-            "epoch": "87",
-            "output_srs": "WGS84",
-          },
-          "results": os_places_api_results,
-        }
       end
 
       it "should query OS Places API and return results" do
@@ -165,6 +164,19 @@ RSpec.describe OsPlacesApi::Client do
       it "should return the cached data" do
         expect(a_request(:get, api_endpoint)).not_to have_been_made
 
+        expect(client.locations_for_postcode(postcode)).to eq([location])
+      end
+    end
+
+    context "there are two simultaneous requests for the same (new) postcode" do
+      it "should not attempt to create the postcode twice" do
+        existing_record = Postcode.create(postcode: postcode, results: os_places_api_results)
+        n = 0 # make the first call to `find_by` return `nil`; subsequent calls should work correctly
+        allow(Postcode).to receive(:find_by) { (n += 1) == 1 ? nil : existing_record }
+        stub_request(:get, api_endpoint)
+          .to_return(status: 200, body: successful_response.to_json)
+
+        expect(Postcode).not_to receive(:create!)
         expect(client.locations_for_postcode(postcode)).to eq([location])
       end
     end
