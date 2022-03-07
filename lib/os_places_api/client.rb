@@ -46,9 +46,15 @@ module OsPlacesApi
     end
 
     def build_locations(results)
-      results.map do |result|
+      locations = results.map do |result|
         LocationBuilder.new(result).build_location
       end
+
+      {
+        "average_latitude" => locations.sum(&:latitude) / locations.size.to_f,
+        "average_longitude" => locations.sum(&:longitude) / locations.size.to_f,
+        "results" => locations,
+      }
     end
   end
 end
