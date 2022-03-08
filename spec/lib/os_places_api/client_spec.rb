@@ -69,6 +69,8 @@ RSpec.describe OsPlacesApi::Client do
                    longitude: -0.0729933,
                    postcode: "E1 8QS")
     end
+    let(:average_latitude) { 51.5144547 }
+    let(:average_longitude) { -0.0729933 }
 
     context "the postcode doesn't exist in the database" do
       before :each do
@@ -79,7 +81,13 @@ RSpec.describe OsPlacesApi::Client do
         stub_request(:get, api_endpoint)
           .to_return(status: 200, body: successful_response.to_json)
 
-        expect(client.locations_for_postcode(postcode).as_json).to eq([location].as_json)
+        expect(client.locations_for_postcode(postcode).as_json).to eq(
+          {
+            "average_latitude" => average_latitude,
+            "average_longitude" => average_longitude,
+            "results" => [location].as_json,
+          },
+        )
       end
 
       it "should cache the response from a successful request" do
@@ -164,7 +172,13 @@ RSpec.describe OsPlacesApi::Client do
       it "should return the cached data" do
         expect(a_request(:get, api_endpoint)).not_to have_been_made
 
-        expect(client.locations_for_postcode(postcode)).to eq([location])
+        expect(client.locations_for_postcode(postcode)).to eq(
+          {
+            "average_latitude" => average_latitude,
+            "average_longitude" => average_longitude,
+            "results" => [location],
+          },
+        )
       end
     end
 
@@ -177,7 +191,13 @@ RSpec.describe OsPlacesApi::Client do
           .to_return(status: 200, body: successful_response.to_json)
 
         expect(Postcode).not_to receive(:create!)
-        expect(client.locations_for_postcode(postcode)).to eq([location])
+        expect(client.locations_for_postcode(postcode)).to eq(
+          {
+            "average_latitude" => average_latitude,
+            "average_longitude" => average_longitude,
+            "results" => [location],
+          },
+        )
       end
     end
 

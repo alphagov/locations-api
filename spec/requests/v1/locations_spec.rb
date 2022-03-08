@@ -9,18 +9,22 @@ RSpec.describe "Locations V1 API" do
   context "Successful call" do
     let(:postcode) { "E1 8QS" }
     let(:locations) do
-      [
-        Location.new(postcode: "E1 8QS",
-                     address: "1, WHITECHAPEL HIGH STREET, LONDON, E1 8QS",
-                     latitude: 51.5144547,
-                     longitude: -0.0729933,
-                     local_custodian_code: 5900),
-        Location.new(postcode: "E1 8QS",
-                     address: "2, WHITECHAPEL HIGH STREET, LONDON, E1 8QS",
-                     latitude: 51.5144548,
-                     longitude: -0.0729934,
-                     local_custodian_code: 5900),
-      ]
+      {
+        "average_latitude" => 51.51445475,
+        "average_longitude" => -0.07299335,
+        "results" => [
+          Location.new(postcode: "E1 8QS",
+                       address: "1, WHITECHAPEL HIGH STREET, LONDON, E1 8QS",
+                       latitude: 51.5144547,
+                       longitude: -0.0729933,
+                       local_custodian_code: 5900),
+          Location.new(postcode: "E1 8QS",
+                       address: "2, WHITECHAPEL HIGH STREET, LONDON, E1 8QS",
+                       latitude: 51.5144548,
+                       longitude: -0.0729934,
+                       local_custodian_code: 5900),
+        ],
+      }
     end
 
     before do
