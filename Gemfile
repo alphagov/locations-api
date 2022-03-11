@@ -7,6 +7,7 @@ gem "gds-api-adapters"
 gem "govuk_app_config"
 gem "httparty"
 gem "pg"
+gem "sprockets"
 
 group :development do
   gem "listen"
