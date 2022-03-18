@@ -30,7 +30,7 @@ RSpec.describe Postcode, type: :model do
 
   describe "Validation" do
     it "successfully validates and stores valid postcodes" do
-      expect { Postcode.create!(postcode: "E18QS", results: "{}") }.to_not raise_error(ActiveRecord::RecordInvalid)
+      expect { Postcode.create!(postcode: "E18QS", results: "{}") }.to_not raise_error
     end
 
     it "raises an error if the postcode is missing" do
