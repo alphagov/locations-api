@@ -85,6 +85,7 @@ GEM
     childprocess (3.0.0)
     climate_control (1.0.1)
     concurrent-ruby (1.1.9)
+    connection_pool (2.2.5)
     crack (0.4.5)
       rexml
     crass (1.0.6)
@@ -129,6 +130,13 @@ GEM
       sentry-ruby (~> 4.5.0)
       statsd-ruby (~> 1.5.0)
       unicorn (>= 5.4, < 5.9)
+    govuk_sidekiq (5.0.0)
+      gds-api-adapters (>= 19.1.0)
+      govuk_app_config (>= 1.1)
+      redis-namespace (~> 1.6)
+      sidekiq (>= 5, < 6)
+      sidekiq-logging-json (~> 0.0)
+      sidekiq-statsd (>= 2.1)
     govuk_test (2.3.0)
       brakeman (>= 5.0.2)
       capybara
@@ -202,6 +210,8 @@ GEM
       nio4r (~> 2.0)
     racc (1.6.0)
     rack (2.2.3)
+    rack-protection (2.2.0)
+      rack
     rack-test (1.1.0)
       rack (>= 1.0, < 3)
     rails (7.0.2)
@@ -236,6 +246,9 @@ GEM
     rb-fsevent (0.11.0)
     rb-inotify (0.10.1)
       ffi (~> 1.0)
+    redis (4.5.1)
+    redis-namespace (1.8.2)
+      redis (>= 3.0.4)
     regexp_parser (2.1.1)
     request_store (1.5.0)
       rack (>= 1.4)
@@ -303,6 +316,16 @@ GEM
     sentry-ruby-core (4.5.2)
       concurrent-ruby
       faraday
+    sidekiq (5.2.10)
+      connection_pool (~> 2.2, >= 2.2.2)
+      rack (~> 2.0)
+      rack-protection (>= 1.5.0)
+      redis (~> 4.5, < 4.6.0)
+    sidekiq-logging-json (0.0.19)
+      sidekiq (>= 3)
+    sidekiq-statsd (2.1.0)
+      activesupport
+      sidekiq (>= 3.3.1)
     simplecov (0.21.2)
       docile (~> 1.1)
       simplecov-html (~> 0.11)
@@ -347,6 +370,7 @@ DEPENDENCIES
   climate_control
   gds-api-adapters
   govuk_app_config
+  govuk_sidekiq
   govuk_test
   httparty
   listen

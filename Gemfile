@@ -5,6 +5,7 @@ gem "rails", "7.0.2"
 gem "bootsnap"
 gem "gds-api-adapters"
 gem "govuk_app_config"
+gem "govuk_sidekiq"
 gem "httparty"
 gem "pg"
 
