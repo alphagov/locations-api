@@ -1,2 +1,7 @@
 ---
 :concurrency: 1
+:logfile: ./log/sidekiq.json.log
+:timeout: 4
+:max_retries: 1
+:queues:
+  - default

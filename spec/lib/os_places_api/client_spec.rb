@@ -182,6 +182,44 @@ RSpec.describe OsPlacesApi::Client do
       end
     end
 
+    context "the postcode is outdated in the database" do
+      before do
+        old_results = os_places_api_results.first["DPA"].dup
+        old_results["LNG"] = -1
+        old_results["LAT"] = -1
+        Postcode.create(postcode: postcode, results: [{ "DPA" => old_results }])
+      end
+
+      it "should query OS Places API and update cached data when `update: true` is passed" do
+        stub_request(:get, api_endpoint)
+          .to_return(status: 200, body: successful_response.to_json)
+
+        expect(client.locations_for_postcode(postcode, update: true).as_json).to eq(
+          {
+            "average_latitude" => average_latitude,
+            "average_longitude" => average_longitude,
+            "results" => [location].as_json,
+          },
+        )
+      end
+
+      it "should not query OS Places API when `update: false` is passed" do
+        expect(a_request(:get, api_endpoint)).not_to have_been_made
+
+        expected_results = [location].as_json.dup
+        expected_results.first["latitude"] = -1.0
+        expected_results.first["longitude"] = -1.0
+
+        expect(client.locations_for_postcode(postcode, update: false).as_json).to eq(
+          {
+            "average_latitude" => -1.0,
+            "average_longitude" => -1.0,
+            "results" => expected_results,
+          },
+        )
+      end
+    end
+
     context "there are two simultaneous requests for the same (new) postcode" do
       it "should not attempt to create the postcode twice" do
         existing_record = Postcode.create(postcode: postcode, results: os_places_api_results)
