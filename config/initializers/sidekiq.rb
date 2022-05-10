@@ -3,6 +3,7 @@ Sidekiq.configure_server do |config|
   Rails.logger = Sidekiq::Logging.logger
 
   config.on(:startup) do
+    Sidekiq::Queue.new("default").clear
     PostcodesCollectionWorker.perform_async(true)
   end
 end
