@@ -1,5 +1,19 @@
 RSpec.describe PostcodesCollectionWorker do
   describe "#perform" do
+    context "where there are no postcodes in the database" do
+      before do
+        allow(Postcode).to receive(:pluck).and_return([])
+      end
+
+      it "sleeps for 10 seconds before trying again" do
+        worker = PostcodesCollectionWorker.new
+        allow(worker).to receive(:sleep)
+        expect(worker).to receive(:sleep).with(10).exactly(1).time
+
+        worker.perform(false)
+      end
+    end
+
     context "where there are postcodes to be refreshed" do
       before do
         allow(Postcode).to receive(:pluck).and_return(%w[E18QS E18QL])
