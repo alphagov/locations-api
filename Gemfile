@@ -8,6 +8,7 @@ gem "govuk_app_config"
 gem "govuk_sidekiq"
 gem "httparty"
 gem "pg"
+gem "with_advisory_lock"
 
 group :development do
   gem "listen"
