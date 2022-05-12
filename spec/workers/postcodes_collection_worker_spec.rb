@@ -16,12 +16,14 @@ RSpec.describe PostcodesCollectionWorker do
 
     context "where there are postcodes to be refreshed" do
       before do
-        allow(Postcode).to receive(:pluck).and_return(%w[E18QS E18QL])
+        Postcode.destroy_all
+        Postcode.create(postcode: "E18QS", updated_at: Time.now, results: "{}")
+        Postcode.create(postcode: "E18QL", updated_at: Time.now, results: "{}")
       end
 
-      it "creates a worker for each postcode" do
-        expect(ProcessPostcodeWorker).to receive(:perform_async).with("E18QS")
-        expect(ProcessPostcodeWorker).to receive(:perform_async).with("E18QL")
+      it "creates a worker for each postcode, in descending order of `updated_at`" do
+        expect(ProcessPostcodeWorker).to receive(:perform_async).with("E18QS").ordered
+        expect(ProcessPostcodeWorker).to receive(:perform_async).with("E18QL").ordered
 
         worker = PostcodesCollectionWorker.new
         allow(worker).to receive(:sleep)

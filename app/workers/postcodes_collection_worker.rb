@@ -13,7 +13,7 @@ class PostcodesCollectionWorker
 private
 
   def refresh_all_postcodes
-    postcodes = Postcode.uncached { Postcode.pluck(:postcode) }
+    postcodes = Postcode.uncached { Postcode.all.sort_by(&:updated_at).pluck(:postcode) }
     postcodes.each do |postcode|
       ProcessPostcodeWorker.perform_async(postcode)
       sleep 1
