@@ -3,7 +3,9 @@ Sidekiq.configure_server do |config|
   Rails.logger = Sidekiq::Logging.logger
 
   config.on(:startup) do
-    Sidekiq::Queue.new("default").clear
-    PostcodesCollectionWorker.perform_async(true)
+    ApplicationRecord.with_advisory_lock("PostcodesCollectionWorker-single-worker", timeout_seconds: 0) do
+      Sidekiq::Queue.new("default").clear
+      PostcodesCollectionWorker.new.perform(true)
+    end
   end
 end

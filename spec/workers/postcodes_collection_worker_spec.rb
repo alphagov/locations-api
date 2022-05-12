@@ -29,6 +29,12 @@ RSpec.describe PostcodesCollectionWorker do
 
         worker.perform(false)
       end
+
+      it "cannot be invoked multiple times without the first invocation completing" do
+        allow(ApplicationRecord).to receive(:with_advisory_lock)
+        expect(ApplicationRecord).to receive(:with_advisory_lock)
+        PostcodesCollectionWorker.new.perform(false)
+      end
     end
   end
 end
