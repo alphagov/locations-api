@@ -32,6 +32,10 @@ To run all linters:
 bundle exec rake lint
 ```
 
+### Further documentation
+
+* [How postcodes are added, cached and updated](docs/postcodes-added-cached-updated.md)
+
 ## Licence
 
 [MIT LICENCE](LICENCE).
