@@ -5,7 +5,7 @@ Sidekiq.configure_server do |config|
   config.on(:startup) do
     ApplicationRecord.with_advisory_lock("PostcodesCollectionWorker-single-worker", timeout_seconds: 0) do
       Sidekiq::Queue.new("default").clear
-      PostcodesCollectionWorker.new.perform(true)
+      PostcodesCollectionWorker.perform_async(true)
     end
   end
 end
