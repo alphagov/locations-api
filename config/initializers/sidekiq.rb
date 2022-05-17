@@ -1,11 +1,22 @@
+require "sidekiq-unique-jobs"
+
 Sidekiq.configure_server do |config|
   # Calls to Rails.logger in a sidekiq process will use Sidekiq's logger
   Rails.logger = Sidekiq::Logging.logger
 
-  config.on(:startup) do
-    ApplicationRecord.with_advisory_lock("PostcodesCollectionWorker-single-worker", timeout_seconds: 0) do
-      Sidekiq::Queue.new("default").clear
-      PostcodesCollectionWorker.perform_async(true)
-    end
+  config.client_middleware do |chain|
+    chain.add SidekiqUniqueJobs::Middleware::Client
+  end
+
+  config.server_middleware do |chain|
+    chain.add SidekiqUniqueJobs::Middleware::Server
+  end
+
+  SidekiqUniqueJobs::Server.configure(config)
+end
+
+Sidekiq.configure_client do |config|
+  config.client_middleware do |chain|
+    chain.add SidekiqUniqueJobs::Middleware::Client
   end
 end
