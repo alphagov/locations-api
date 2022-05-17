@@ -1,7 +1,10 @@
 ---
-:concurrency: 1
+:concurrency: 10
 :logfile: ./log/sidekiq.json.log
 :timeout: 4
 :max_retries: 1
 :queues:
-  - default
+  # See here to understand priorities: https://github.com/mperham/sidekiq/wiki/Advanced-Options#queues
+  # Use powers of 2: higher priority groups are checked twice as often.
+  - [update_postcode, 8]
+  - [queue_postcode, 1]

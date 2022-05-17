@@ -1,23 +1,25 @@
 module OsPlacesApi
-  class ExpiredAccessToken < RuntimeError; end
+  class ClientError < RuntimeError; end
 
-  class InvalidOsPlacesApiCredentials < RuntimeError; end
+  class ExpiredAccessToken < ClientError; end
 
-  class InvalidPostcodeProvided < RuntimeError; end
+  class InvalidOsPlacesApiCredentials < ClientError; end
 
-  class InternalServerError < RuntimeError; end
+  class InvalidPostcodeProvided < ClientError; end
 
-  class MethodNotAllowed < RuntimeError; end
+  class InternalServerError < ClientError; end
 
-  class MissingOsPlacesApiCredentials < RuntimeError; end
+  class MethodNotAllowed < ClientError; end
 
-  class RateLimitExceeded < RuntimeError; end
+  class MissingOsPlacesApiCredentials < ClientError; end
 
-  class RequestForbidden < RuntimeError; end
+  class RateLimitExceeded < ClientError; end
 
-  class RequestNotFound < RuntimeError; end
+  class RequestForbidden < ClientError; end
 
-  class ServiceUnavailable < RuntimeError; end
+  class RequestNotFound < ClientError; end
 
-  class UnexpectedResponse < RuntimeError; end
+  class ServiceUnavailable < ClientError; end
+
+  class UnexpectedResponse < ClientError; end
 end
