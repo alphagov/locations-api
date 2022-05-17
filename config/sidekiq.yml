@@ -8,3 +8,7 @@
   # Use powers of 2: higher priority groups are checked twice as often.
   - [update_postcode, 8]
   - [queue_postcode, 1]
+:schedule:
+  queue_oldest_postcodes_for_updating:
+    every: '1s'
+    class: PostcodesCollectionWorker
