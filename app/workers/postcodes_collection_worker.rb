@@ -1,5 +1,6 @@
 class PostcodesCollectionWorker
   include Sidekiq::Worker
+  sidekiq_options queue: :queue_postcode
 
   POSTCODES_PER_SECOND = 3
 

@@ -1,5 +1,6 @@
 class ProcessPostcodeWorker
   include Sidekiq::Worker
+  sidekiq_options queue: :update_postcode
 
   def perform(postcode)
     token_manager = OsPlacesApi::AccessTokenManager.new
