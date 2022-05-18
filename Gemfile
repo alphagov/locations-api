@@ -7,6 +7,8 @@ gem "gds-api-adapters"
 gem "govuk_app_config"
 gem "govuk_sidekiq"
 gem "httparty"
+gem "pact", require: false
+gem "pact_broker-client"
 gem "pg"
 gem "sidekiq-scheduler"
 gem "sidekiq-unique-jobs"
@@ -16,6 +18,7 @@ group :development do
 end
 
 group :test do
+  gem "factory_bot_rails"
   gem "simplecov"
 end
 
