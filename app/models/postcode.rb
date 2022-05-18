@@ -6,6 +6,6 @@ class Postcode < ApplicationRecord
 private
 
   def normalize_postcode
-    self["postcode"] = self["postcode"].to_s.gsub(PostcodeValidator::DISALLOWED_CHARS, "").upcase
+    self["postcode"] = PostcodeHelper.normalise(self["postcode"])
   end
 end
