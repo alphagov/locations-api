@@ -7,6 +7,8 @@ module OsPlacesApi
     end
 
     def locations_for_postcode(postcode, update: false)
+      postcode = PostcodeHelper.normalise(postcode)
+
       if (record = Postcode.find_by(postcode: postcode)) && !update
         return build_locations(record["results"])
       end

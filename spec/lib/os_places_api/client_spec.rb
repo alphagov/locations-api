@@ -165,14 +165,28 @@ RSpec.describe OsPlacesApi::Client do
     end
 
     context "the postcode exists in the database" do
-      before do
-        Postcode.create(postcode: postcode, results: os_places_api_results)
-      end
-
       it "should return the cached data" do
+        Postcode.create(postcode: postcode, results: os_places_api_results)
+
         expect(a_request(:get, api_endpoint)).not_to have_been_made
 
         expect(client.locations_for_postcode(postcode)).to eq(
+          {
+            "average_latitude" => average_latitude,
+            "average_longitude" => average_longitude,
+            "results" => [location],
+          },
+        )
+      end
+
+      it "should return the cached data even if the postcode is structured differently in the database" do
+        normalised_postcode = "E18QS"
+        user_inputted_postcode = "E1 8QS"
+        Postcode.create(postcode: normalised_postcode, results: os_places_api_results)
+
+        expect(a_request(:get, api_endpoint)).not_to have_been_made
+
+        expect(client.locations_for_postcode(user_inputted_postcode)).to eq(
           {
             "average_latitude" => average_latitude,
             "average_longitude" => average_longitude,
@@ -240,7 +254,7 @@ RSpec.describe OsPlacesApi::Client do
     end
 
     context "the postcode is invalid" do
-      let(:postcode) { "foo" }
+      let(:postcode) { "FOO" }
 
       it "raises an exception if an invalid postcode is supplied" do
         api_response = {
