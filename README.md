@@ -35,6 +35,7 @@ bundle exec rake lint
 ### Further documentation
 
 * [How postcodes are added, cached and updated](docs/postcodes-added-cached-updated.md)
+* [OS Places API](docs/os-places-api.md)
 
 ## Licence
 
