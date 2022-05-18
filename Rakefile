@@ -5,4 +5,10 @@ require_relative "config/application"
 
 Rails.application.load_tasks
 
-task default: %i[lint spec]
+begin
+  require "pact/tasks"
+rescue LoadError
+  # Pact isn't available in all environments
+end
+
+task default: %i[lint spec pact:verify]
