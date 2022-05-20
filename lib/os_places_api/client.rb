@@ -25,14 +25,23 @@ module OsPlacesApi
 
       begin
         json = JSON.parse(response.body)
-        raise UnexpectedResponse if json["results"].nil?
 
-        if (existing = Postcode.find_by(postcode: postcode))
-          existing.update(results: json["results"], updated_at: Time.now) if update
+        if json["results"].nil?
+          # delete cached postcodes that were terminated by the Royal Mail
+          if (existing = Postcode.find_by(postcode: postcode))
+            existing.delete
+          else
+            raise UnexpectedResponse
+          end
+
         else
-          Postcode.create!(postcode: postcode, results: json["results"])
+          if (existing = Postcode.find_by(postcode: postcode))
+            existing.update(results: json["results"], updated_at: Time.now) if update
+          else
+            Postcode.create!(postcode: postcode, results: json["results"])
+          end
+          build_locations(json["results"])
         end
-        build_locations(json["results"])
       rescue JSON::ParserError
         raise UnexpectedResponse
       end

@@ -232,6 +232,15 @@ RSpec.describe OsPlacesApi::Client do
           },
         )
       end
+
+      it "should query OS Places API and delete the postcode if it was terminated" do
+        stub_request(:get, api_endpoint)
+          .to_return(status: 200, body: {}.to_json)
+
+        expect(Postcode.where(postcode: postcode).pluck(:postcode)).to eq([postcode])
+        client.locations_for_postcode(postcode, update: true)
+        expect(Postcode.where(postcode: postcode).pluck(:postcode)).to eq([])
+      end
     end
 
     context "there are two simultaneous requests for the same (new) postcode" do
