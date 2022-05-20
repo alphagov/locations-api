@@ -9,8 +9,10 @@ module OsPlacesApi
     def locations_for_postcode(postcode, update: false)
       postcode = PostcodeHelper.normalise(postcode)
 
-      if (record = Postcode.find_by(postcode: postcode)) && !update
-        return build_locations(record["results"])
+      if (record = Postcode.find_by(postcode: postcode))
+        return build_locations(record["results"]) unless update
+
+        record.destroy # handle edge case where postcode has been terminated by Royal Mail
       end
 
       response = HTTParty.get(
@@ -25,23 +27,14 @@ module OsPlacesApi
 
       begin
         json = JSON.parse(response.body)
+        raise UnexpectedResponse if json["results"].nil?
 
-        if json["results"].nil?
-          # delete cached postcodes that were terminated by the Royal Mail
-          if (existing = Postcode.find_by(postcode: postcode))
-            existing.delete
-          else
-            raise UnexpectedResponse
-          end
-
+        if (existing = Postcode.find_by(postcode: postcode))
+          existing.update(results: json["results"], updated_at: Time.now) if update
         else
-          if (existing = Postcode.find_by(postcode: postcode))
-            existing.update(results: json["results"], updated_at: Time.now) if update
-          else
-            Postcode.create!(postcode: postcode, results: json["results"])
-          end
-          build_locations(json["results"])
+          Postcode.create!(postcode: postcode, results: json["results"])
         end
+        build_locations(json["results"])
       rescue JSON::ParserError
         raise UnexpectedResponse
       end

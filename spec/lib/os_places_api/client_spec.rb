@@ -238,7 +238,7 @@ RSpec.describe OsPlacesApi::Client do
           .to_return(status: 200, body: {}.to_json)
 
         expect(Postcode.where(postcode: postcode).pluck(:postcode)).to eq([postcode])
-        client.locations_for_postcode(postcode, update: true)
+        expect { client.locations_for_postcode(postcode, update: true) }.to raise_error(OsPlacesApi::UnexpectedResponse)
         expect(Postcode.where(postcode: postcode).pluck(:postcode)).to eq([])
       end
     end
