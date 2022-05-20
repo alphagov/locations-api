@@ -6,7 +6,7 @@ class PostcodesCollectionWorker
 
   def perform
     postcodes = Postcode.uncached do
-      Postcode.all.sort_by(&:updated_at).pluck(:postcode).first(POSTCODES_PER_SECOND)
+      Postcode.order("updated_at ASC").first(POSTCODES_PER_SECOND).pluck(:postcode)
     end
     postcodes.each { |postcode| ProcessPostcodeWorker.perform_async(postcode) }
   end
