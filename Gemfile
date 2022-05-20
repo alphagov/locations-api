@@ -8,6 +8,7 @@ gem "govuk_app_config"
 gem "govuk_sidekiq"
 gem "httparty"
 gem "pg"
+gem "sentry-sidekiq"
 gem "sidekiq-scheduler"
 gem "sidekiq-unique-jobs"
 

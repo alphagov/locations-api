@@ -307,6 +307,9 @@ GEM
       sentry-ruby-core (= 5.3.0)
     sentry-ruby-core (5.3.0)
       concurrent-ruby
+    sentry-sidekiq (5.3.0)
+      sentry-ruby-core (~> 5.3.0)
+      sidekiq (>= 3.0)
     sidekiq (5.2.10)
       connection_pool (~> 2.2, >= 2.2.2)
       rack (~> 2.0)
@@ -377,6 +380,7 @@ DEPENDENCIES
   rails (= 7.0.3)
   rspec-rails
   rubocop-govuk
+  sentry-sidekiq
   sidekiq-scheduler
   sidekiq-unique-jobs
   simplecov
