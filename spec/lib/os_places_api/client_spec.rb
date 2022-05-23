@@ -246,5 +246,15 @@ RSpec.describe OsPlacesApi::Client do
       client.update_postcode(postcode)
       expect(Postcode.where(postcode: postcode).pluck(:results)).to eq([os_places_api_results])
     end
+
+    it "should query OS Places API and delete the postcode if it was terminated" do
+      Postcode.create(postcode: postcode, results: [{}])
+      stub_request(:get, api_endpoint)
+        .to_return(status: 200, body: {}.to_json)
+
+      expect(Postcode.find_by(postcode: postcode)).not_to eq(nil)
+      client.update_postcode(postcode)
+      expect(Postcode.find_by(postcode: postcode)).to eq(nil)
+    end
   end
 end

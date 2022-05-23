@@ -23,8 +23,11 @@ module OsPlacesApi
       postcode = PostcodeHelper.normalise(postcode)
       response = get_api_response(postcode)
       record = Postcode.find_by(postcode: postcode)
-
-      record.update(results: response["results"])
+      if response["results"].nil?
+        record.destroy
+      else
+        record.update(results: response["results"], updated_at: Time.now)
+      end
     end
 
   private
