@@ -235,7 +235,15 @@ RSpec.describe OsPlacesApi::Client do
   end
 
   describe "#update_postcode" do
-    it "should query OS Places API and update cached data" do
+    it "should query OS Places API and add a new row if postcode doesn't exist" do
+      stub_request(:get, api_endpoint)
+        .to_return(status: 200, body: successful_response.to_json)
+
+      client.update_postcode(postcode)
+      expect(Postcode.where(postcode: postcode).pluck(:results)).to eq([os_places_api_results])
+    end
+
+    it "should query OS Places API and update cached data if postcode exists" do
       old_results = os_places_api_results.first["DPA"].dup
       old_results["LNG"] = -1
       old_results["LAT"] = -1

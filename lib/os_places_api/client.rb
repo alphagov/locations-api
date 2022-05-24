@@ -24,9 +24,11 @@ module OsPlacesApi
       response = get_api_response(postcode)
       record = Postcode.find_by(postcode: postcode)
       if response["results"].nil?
-        record.destroy
+        record.destroy unless record.nil?
+      elsif record.nil?
+        Postcode.create!(postcode: postcode, results: response["results"])
       else
-        record.update(results: response["results"], updated_at: Time.now)
+        record.update(results: response["results"])
       end
     end
 
