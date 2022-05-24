@@ -6,35 +6,27 @@ module OsPlacesApi
       @token_manager = token_manager
     end
 
-    def locations_for_postcode(postcode, update: false)
+    def locations_for_postcode(postcode)
       postcode = PostcodeHelper.normalise(postcode)
-
-      if (record = Postcode.find_by(postcode: postcode)) && !update
+      if (record = Postcode.find_by(postcode: postcode))
         return build_locations(record["results"])
       end
 
-      response = HTTParty.get(
-        "https://api.os.uk/search/places/v1/postcode",
-        {
-          query: { postcode: postcode, output_srs: "WGS84" },
-          headers: { "Authorization": "Bearer #{@token_manager.access_token}" },
-        },
-      )
+      response = get_api_response(postcode)
+      raise UnexpectedResponse if response["results"].nil?
 
-      validate_response_code(response)
+      Postcode.create!(postcode: postcode, results: response["results"]) unless Postcode.find_by(postcode: postcode)
+      build_locations(response["results"])
+    end
 
-      begin
-        json = JSON.parse(response.body)
-        raise UnexpectedResponse if json["results"].nil?
-
-        if (existing = Postcode.find_by(postcode: postcode))
-          existing.update(results: json["results"], updated_at: Time.now) if update
-        else
-          Postcode.create!(postcode: postcode, results: json["results"])
-        end
-        build_locations(json["results"])
-      rescue JSON::ParserError
-        raise UnexpectedResponse
+    def update_postcode(postcode)
+      postcode = PostcodeHelper.normalise(postcode)
+      response = get_api_response(postcode)
+      record = Postcode.find_by(postcode: postcode)
+      if response["results"].nil?
+        record.destroy
+      else
+        record.update(results: response["results"], updated_at: Time.now)
       end
     end
 
@@ -61,6 +53,24 @@ module OsPlacesApi
         "average_longitude" => locations.sum(&:longitude) / locations.size.to_f,
         "results" => locations,
       }
+    end
+
+    def get_api_response(postcode)
+      response = HTTParty.get(
+        "https://api.os.uk/search/places/v1/postcode",
+        {
+          query: { postcode: postcode, output_srs: "WGS84" },
+          headers: { "Authorization": "Bearer #{@token_manager.access_token}" },
+        },
+      )
+
+      validate_response_code(response)
+
+      begin
+        JSON.parse(response.body)
+      rescue JSON::ParserError
+        raise UnexpectedResponse
+      end
     end
   end
 end

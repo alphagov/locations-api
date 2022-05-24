@@ -6,7 +6,7 @@ RSpec.describe ProcessPostcodeWorker do
       stubbed_client = double("OsPlacesApi::Client")
 
       expect(OsPlacesApi::Client).to receive(:new) { stubbed_client }
-      expect(stubbed_client).to receive(:locations_for_postcode).with(postcode, update: true)
+      expect(stubbed_client).to receive(:update_postcode).with(postcode)
 
       ProcessPostcodeWorker.new.perform(postcode)
     end
