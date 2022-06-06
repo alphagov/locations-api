@@ -32,6 +32,24 @@ module OsPlacesApi
       end
     end
 
+    def get_api_response(postcode)
+      response = HTTParty.get(
+        "https://api.os.uk/search/places/v1/postcode",
+        {
+          query: { postcode: postcode, output_srs: "WGS84" },
+          headers: { "Authorization": "Bearer #{@token_manager.access_token}" },
+        },
+      )
+
+      validate_response_code(response)
+
+      begin
+        JSON.parse(response.body)
+      rescue JSON::ParserError
+        raise UnexpectedResponse
+      end
+    end
+
   private
 
     def validate_response_code(response)
@@ -55,24 +73,6 @@ module OsPlacesApi
         "average_longitude" => locations.sum(&:longitude) / locations.size.to_f,
         "results" => locations,
       }
-    end
-
-    def get_api_response(postcode)
-      response = HTTParty.get(
-        "https://api.os.uk/search/places/v1/postcode",
-        {
-          query: { postcode: postcode, output_srs: "WGS84" },
-          headers: { "Authorization": "Bearer #{@token_manager.access_token}" },
-        },
-      )
-
-      validate_response_code(response)
-
-      begin
-        JSON.parse(response.body)
-      rescue JSON::ParserError
-        raise UnexpectedResponse
-      end
     end
   end
 end
