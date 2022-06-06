@@ -255,6 +255,16 @@ RSpec.describe OsPlacesApi::Client do
       expect(Postcode.where(postcode: postcode).pluck(:results)).to eq([os_places_api_results])
     end
 
+    it "should update the `updated_at` property even if no changes were made" do
+      updated_at = 1.day.ago
+      Postcode.create(postcode: postcode, results: successful_response[:results], updated_at: updated_at)
+      stub_request(:get, api_endpoint)
+        .to_return(status: 200, body: successful_response.to_json)
+
+      client.update_postcode(postcode)
+      expect(Postcode.find_by(postcode: postcode).updated_at.strftime("%A")).to eq(Time.now.strftime("%A"))
+    end
+
     it "should query OS Places API and delete the postcode if it was terminated" do
       Postcode.create(postcode: postcode, results: [{}])
       stub_request(:get, api_endpoint)
