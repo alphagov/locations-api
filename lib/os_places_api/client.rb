@@ -28,7 +28,7 @@ module OsPlacesApi
       elsif record.nil?
         Postcode.create!(postcode: postcode, results: response["results"])
       else
-        record.update(results: response["results"])
+        record.update(results: response["results"]) && record.touch
       end
     end
 
