@@ -67,8 +67,7 @@ RSpec.describe OsPlacesApi::Client do
       Location.new(address: "1, WHITECHAPEL HIGH STREET, LONDON, E1 8QS",
                    latitude: 51.5144547,
                    local_custodian_code: 5900,
-                   longitude: -0.0729933,
-                   postcode: "E1 8QS")
+                   longitude: -0.0729933)
     end
     let(:average_latitude) { 51.5144547 }
     let(:average_longitude) { -0.0729933 }

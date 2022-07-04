@@ -2,8 +2,7 @@ require "spec_helper"
 
 RSpec.describe Location, type: :model do
   subject do
-    described_class.new(postcode: "E1 8QS",
-                        address: "1, WHITECHAPEL HIGH STREET, LONDON, E1 8QS",
+    described_class.new(address: "1, WHITECHAPEL HIGH STREET, LONDON, E1 8QS",
                         latitude: 51.5144547,
                         longitude: -0.0729933,
                         local_custodian_code: 5900)
@@ -21,7 +20,6 @@ RSpec.describe Location, type: :model do
     end
 
     it "is valid without any attributes" do
-      subject.postcode = nil
       subject.address = nil
       subject.latitude =  nil
       subject.longitude = nil
