@@ -5,7 +5,7 @@ RSpec.describe OsPlacesApi::Client do
     described_class.new(instance_double("AccessTokenManager", access_token: "some token"))
   end
   let(:postcode) { "E18QS" }
-  let(:api_endpoint) { "https://api.os.uk/search/places/v1/postcode?output_srs=WGS84&postcode=#{postcode}" }
+  let(:api_endpoint) { "https://api.os.uk/search/places/v1/postcode?output_srs=WGS84&postcode=#{postcode}&dataset=DPA,LPI" }
   let(:successful_response) do
     {
       "header": {
@@ -14,7 +14,7 @@ RSpec.describe OsPlacesApi::Client do
         "offset": 0,
         "totalresults": 1, # really 12, but we've omitted the other 11 in `results` above
         "format": "JSON",
-        "dataset": "DPA",
+        "dataset": "DPA,LPI",
         "lr": "EN,CY",
         "maxresults": 100,
         "epoch": "87",
@@ -27,7 +27,7 @@ RSpec.describe OsPlacesApi::Client do
     [
       {
         "DPA" => {
-          "UPRN" => "6714279",
+          "UPRN" => "6714278",
           "UDPRN" => "54673874",
           "ADDRESS" => "1, WHITECHAPEL HIGH STREET, LONDON, E1 8QS",
           "BUILDING_NUMBER" => "1",
@@ -58,20 +58,68 @@ RSpec.describe OsPlacesApi::Client do
           "MATCH_DESCRIPTION" => "EXACT",
         },
       },
+      {
+        "LPI" => {
+          "UPRN" => "6714279",
+          "ADDRESS" => "2, WHITECHAPEL HIGH STREET, LONDON, E1 8QS",
+          "USRN" => "22701338",
+          "LPI_KEY" => "5900L000449318",
+          "PAO_START_NUMBER" => "2",
+          "STREET_DESCRIPTION" => "WHITECHAPEL HIGH STREET",
+          "TOWN_NAME" => "LONDON",
+          "ADMINISTRATIVE_AREA" => "TOWER HAMLETS",
+          "POSTCODE_LOCATOR" => "E1 8QS",
+          "RPC" => "2",
+          "X_COORDINATE" => 533_813.0,
+          "Y_COORDINATE" => 181_262.0,
+          "LNG" => -0.0729935,
+          "LAT" => 51.5144545,
+          "STATUS" => "APPROVED",
+          "LOGICAL_STATUS_CODE" => "1",
+          "CLASSIFICATION_CODE" => "CO01",
+          "CLASSIFICATION_CODE_DESCRIPTION" => "Office / Work Studio",
+          "LOCAL_CUSTODIAN_CODE" => 5900,
+          "LOCAL_CUSTODIAN_CODE_DESCRIPTION" => "TOWER HAMLETS",
+          "COUNTRY_CODE" => "E",
+          "COUNTRY_CODE_DESCRIPTION" => "This record is within England",
+          "POSTAL_ADDRESS_CODE" => "D",
+          "POSTAL_ADDRESS_CODE_DESCRIPTION" => "A record which is linked to PAF",
+          "BLPU_STATE_CODE" => "1",
+          "BLPU_STATE_CODE_DESCRIPTION" => "Under construction",
+          "TOPOGRAPHY_LAYER_TOID" => "osgb1000006035651",
+          "LAST_UPDATE_DATE" => "17/06/2017",
+          "ENTRY_DATE" => "17/02/2017",
+          "BLPU_STATE_DATE" => "17/02/2017",
+          "STREET_STATE_CODE" => "2",
+          "STREET_STATE_CODE_DESCRIPTION" => "Open",
+          "STREET_CLASSIFICATION_CODE" => "8",
+          "STREET_CLASSIFICATION_CODE_DESCRIPTION" => "All vehicles",
+          "LPI_LOGICAL_STATUS_CODE" => "1",
+          "LPI_LOGICAL_STATUS_CODE_DESCRIPTION" => "APPROVED",
+          "LANGUAGE" => "EN",
+          "MATCH" => 1.0,
+          "MATCH_DESCRIPTION" => "EXACT",
+        },
+      },
       # subsequent results omitted for brevity
     ]
   end
 
   describe "#locations_for_postcode" do
-    let(:location) do
-      Location.new(address: "1, WHITECHAPEL HIGH STREET, LONDON, E1 8QS",
-                   latitude: 51.5144547,
-                   local_custodian_code: 5900,
-                   longitude: -0.0729933,
-                   postcode: "E1 8QS")
+    let(:locations) do
+      [
+        Location.new(address: "1, WHITECHAPEL HIGH STREET, LONDON, E1 8QS",
+                     latitude: 51.5144547,
+                     local_custodian_code: 5900,
+                     longitude: -0.0729933),
+        Location.new(address: "2, WHITECHAPEL HIGH STREET, LONDON, E1 8QS",
+                     latitude: 51.5144545,
+                     local_custodian_code: 5900,
+                     longitude: -0.0729935),
+      ]
     end
-    let(:average_latitude) { 51.5144547 }
-    let(:average_longitude) { -0.0729933 }
+    let(:average_latitude) { 51.5144546 }
+    let(:average_longitude) { -0.0729934 }
 
     context "the postcode doesn't exist in the database" do
       before :each do
@@ -86,7 +134,21 @@ RSpec.describe OsPlacesApi::Client do
           {
             "average_latitude" => average_latitude,
             "average_longitude" => average_longitude,
-            "results" => [location].as_json,
+            "results" => locations.as_json,
+          },
+        )
+      end
+
+      it "should filter out duplicate `UPRN` results from the OS Places API response" do
+        os_places_api_results[1]["LPI"]["UPRN"] = os_places_api_results[0]["DPA"]["UPRN"]
+        stub_request(:get, api_endpoint)
+          .to_return(status: 200, body: successful_response.to_json)
+
+        expect(client.locations_for_postcode(postcode).as_json).to eq(
+          {
+            "average_latitude" => locations[0].latitude,
+            "average_longitude" => locations[0].longitude,
+            "results" => [locations[0]].as_json,
           },
         )
       end
@@ -175,7 +237,7 @@ RSpec.describe OsPlacesApi::Client do
           {
             "average_latitude" => average_latitude,
             "average_longitude" => average_longitude,
-            "results" => [location],
+            "results" => locations,
           },
         )
       end
@@ -191,7 +253,7 @@ RSpec.describe OsPlacesApi::Client do
           {
             "average_latitude" => average_latitude,
             "average_longitude" => average_longitude,
-            "results" => [location],
+            "results" => locations,
           },
         )
       end
@@ -210,7 +272,7 @@ RSpec.describe OsPlacesApi::Client do
           {
             "average_latitude" => average_latitude,
             "average_longitude" => average_longitude,
-            "results" => [location],
+            "results" => locations,
           },
         )
       end

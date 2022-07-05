@@ -46,9 +46,9 @@ module OsPlacesApi
     end
 
     def build_locations(results)
-      locations = results.map do |result|
-        LocationBuilder.new(result).build_location
-      end
+      locations = results.map { |result| result[result.keys.first] } # first key is either "LPI" or "DPA"
+        .uniq { |result_hash| result_hash["UPRN"] }
+        .map { |result_hash| LocationBuilder.new(result_hash).build_location }
 
       {
         "average_latitude" => locations.sum(&:latitude) / locations.size.to_f,
@@ -61,7 +61,7 @@ module OsPlacesApi
       response = HTTParty.get(
         "https://api.os.uk/search/places/v1/postcode",
         {
-          query: { postcode: postcode, output_srs: "WGS84" },
+          query: { postcode: postcode, output_srs: "WGS84", "dataset": "DPA,LPI" },
           headers: { "Authorization": "Bearer #{@token_manager.access_token}" },
         },
       )
