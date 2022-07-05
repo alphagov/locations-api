@@ -43,6 +43,7 @@ Pact.provider_states_for "GDS API Adapters" do
       Postcode.create(postcode: "SW1A1AA", results: [
         {
           "DPA" => {
+            "UPRN" => "6714278",
             "POSTCODE" => "SW1A1AA",
             "LNG" => -0.1415870,
             "LAT" => 51.5010096,
@@ -51,6 +52,7 @@ Pact.provider_states_for "GDS API Adapters" do
         },
         {
           "DPA" => {
+            "UPRN" => "6714279",
             "POSTCODE" => "SW1A1AA",
             "LNG" => -0.1415871,
             "LAT" => 51.5010097,

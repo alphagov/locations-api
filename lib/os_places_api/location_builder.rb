@@ -5,10 +5,10 @@ module OsPlacesApi
     end
 
     def build_location
-      Location.new(address: @result.dig("DPA", "ADDRESS"),
-                   latitude: @result.dig("DPA", "LAT"),
-                   longitude: @result.dig("DPA", "LNG"),
-                   local_custodian_code: @result.dig("DPA", "LOCAL_CUSTODIAN_CODE"))
+      Location.new(address: @result["ADDRESS"],
+                   latitude: @result["LAT"],
+                   longitude: @result["LNG"],
+                   local_custodian_code: @result["LOCAL_CUSTODIAN_CODE"])
     end
   end
 end
