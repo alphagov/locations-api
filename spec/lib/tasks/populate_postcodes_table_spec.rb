@@ -3,7 +3,7 @@ require "spec_helper"
 
 Rails.application.load_tasks
 
-RSpec.describe Tasks do
+RSpec.describe "Tasks" do
   describe "when running the task" do
     before do
       Postcode.destroy_all
