@@ -34,6 +34,8 @@ module OsPlacesApi
 
   private
 
+    NATIONAL_AUTHORITIES = ["ORDNANCE SURVEY", "HIGHWAYS ENGLAND"].freeze
+
     def validate_response_code(response)
       raise InvalidPostcodeProvided if response.code == 400
       raise ExpiredAccessToken if response.code == 401
@@ -48,6 +50,7 @@ module OsPlacesApi
     def build_locations(results)
       locations = results.map { |result| result[result.keys.first] } # first key is either "LPI" or "DPA"
         .uniq { |result_hash| result_hash["UPRN"] }
+        .reject { |result_hash| NATIONAL_AUTHORITIES.include? result_hash["LOCAL_CUSTODIAN_CODE_DESCRIPTION"] }
         .map { |result_hash| LocationBuilder.new(result_hash).build_location }
 
       {
