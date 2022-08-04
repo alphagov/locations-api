@@ -60,4 +60,23 @@ RSpec.describe "Locations V1 API" do
       end
     end
   end
+
+  context "Call for a postcode not in OS Places API datasets" do
+    let(:postcode) { "E1 8QS" }
+    let(:expected_validation_response) do
+      { errors: { postcode: ["No results found for given postcode"] } }.to_json
+    end
+
+    before do
+      client = double("client")
+      allow(OsPlacesApi::Client).to receive(:new).and_return(client)
+      expect(client).to receive(:locations_for_postcode).with(postcode).and_raise(OsPlacesApi::NoResultsForPostcode)
+    end
+
+    it "Should return proper body with error message" do
+      get "/v1/locations?postcode=#{postcode}"
+
+      expect(response.body).to eq expected_validation_response
+    end
+  end
 end
