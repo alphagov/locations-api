@@ -13,6 +13,8 @@ module OsPlacesApi
 
   class MissingOsPlacesApiCredentials < ClientError; end
 
+  class NoResultsForPostcode < ClientError; end
+
   class RateLimitExceeded < ClientError; end
 
   class RequestForbidden < ClientError; end

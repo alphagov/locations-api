@@ -284,11 +284,27 @@ RSpec.describe OsPlacesApi::Client do
         expect { client.locations_for_postcode(postcode) }.to raise_error(OsPlacesApi::ServiceUnavailable)
       end
 
+      it "raises an exception if the postcode is not in OS Places API datasets" do
+        os_places_api_result_without_location = {
+          "header": {
+            "uri": api_endpoint,
+            "query": "postcode=#{postcode}",
+            "offset": 0,
+            "totalresults": 0,
+            "format": "JSON",
+            "dataset": "DPA,LPI",
+            "lr": "EN,CY",
+            "maxresults": 100,
+            "epoch": "87",
+            "output_srs": "WGS84",
+          },
+        }
+        stub_request(:get, api_endpoint).to_return(status: 200, body: os_places_api_result_without_location.to_json)
+        expect { client.locations_for_postcode(postcode) }.to raise_error(OsPlacesApi::NoResultsForPostcode)
+      end
+
       it "raises an exception if the response isn't in the structure we expect" do
         stub_request(:get, api_endpoint).to_return(status: 200, body: "foo")
-        expect { client.locations_for_postcode(postcode) }.to raise_error(OsPlacesApi::UnexpectedResponse)
-
-        stub_request(:get, api_endpoint).to_return(status: 200, body: "{}")
         expect { client.locations_for_postcode(postcode) }.to raise_error(OsPlacesApi::UnexpectedResponse)
       end
     end

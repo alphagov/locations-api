@@ -4,8 +4,12 @@ module V1
 
     def index
       token_manager = OsPlacesApi::AccessTokenManager.new
-      locations = OsPlacesApi::Client.new(token_manager).locations_for_postcode(params[:postcode])
-      render json: locations
+      begin
+        locations = OsPlacesApi::Client.new(token_manager).locations_for_postcode(params[:postcode])
+        render json: locations
+      rescue OsPlacesApi::NoResultsForPostcode
+        render json: { errors: { "postcode": ["No results found for given postcode"] } }, status: 404
+      end
     end
 
   private

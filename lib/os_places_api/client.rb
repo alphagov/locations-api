@@ -13,7 +13,7 @@ module OsPlacesApi
       end
 
       response = get_api_response(postcode)
-      raise UnexpectedResponse if response["results"].nil?
+      raise NoResultsForPostcode if response["results"].nil?
 
       Postcode.create!(postcode: postcode, results: response["results"]) unless Postcode.find_by(postcode: postcode)
       build_locations(response["results"])
