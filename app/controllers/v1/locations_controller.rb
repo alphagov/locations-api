@@ -3,11 +3,14 @@ module V1
     before_action :validate_postcode
 
     def index
+      Sentry.set_tags postcode: PostcodeHelper.normalise(params[:postcode])
+
       token_manager = OsPlacesApi::AccessTokenManager.new
       begin
         locations = OsPlacesApi::Client.new(token_manager).locations_for_postcode(params[:postcode])
         render json: locations
-      rescue OsPlacesApi::NoResultsForPostcode
+      rescue OsPlacesApi::NoResultsForPostcode => e
+        Sentry.capture_exception(e) # Ensure that this exception is still reported
         render json: { errors: { "postcode": ["No results found for given postcode"] } }, status: 404
       end
     end

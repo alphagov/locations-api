@@ -63,6 +63,7 @@ RSpec.describe "Locations V1 API" do
 
   context "Call for a postcode not in OS Places API datasets" do
     let(:postcode) { "E1 8QS" }
+    let(:normalised_postcode) { "E18QS" }
     let(:expected_validation_response) do
       { errors: { postcode: ["No results found for given postcode"] } }.to_json
     end
@@ -73,10 +74,55 @@ RSpec.describe "Locations V1 API" do
       expect(client).to receive(:locations_for_postcode).with(postcode).and_raise(OsPlacesApi::NoResultsForPostcode)
     end
 
-    it "Should return proper body with error message" do
+    it "Should return proper body with error message, and report the error to Sentry" do
+      expect(Sentry).to receive(:capture_exception).and_wrap_original do |original, *args|
+        expect(Sentry.get_current_scope.tags).to include(postcode: normalised_postcode)
+        original.call(*args)
+      end
+
       get "/v1/locations?postcode=#{postcode}"
 
       expect(response.body).to eq expected_validation_response
+    end
+  end
+
+  context "When the postcode passes our validity check but OS Places API says it is invalid" do
+    let(:postcode) { "AB12 3CD" }
+    let(:normalised_postcode) { "AB123CD" }
+
+    before do
+      client = double("client")
+      allow(OsPlacesApi::Client).to receive(:new).and_return(client)
+      expect(client).to receive(:locations_for_postcode).with(postcode).and_raise(OsPlacesApi::InvalidPostcodeProvided)
+    end
+
+    it "Should report the error to Sentry, tagged with the postcode" do
+      expect(Sentry).to receive(:capture_exception).and_wrap_original do |original, *args|
+        expect(Sentry.get_current_scope.tags).to include(postcode: normalised_postcode)
+        original.call(*args)
+      end
+
+      expect { get "/v1/locations?postcode=#{postcode}" }.to raise_error(OsPlacesApi::InvalidPostcodeProvided)
+    end
+  end
+
+  context "When OS places API returns an unexpected response" do
+    let(:postcode) { "AB12 3CD" }
+    let(:normalised_postcode) { "AB123CD" }
+
+    before do
+      client = double("client")
+      allow(OsPlacesApi::Client).to receive(:new).and_return(client)
+      expect(client).to receive(:locations_for_postcode).with(postcode).and_raise(OsPlacesApi::UnexpectedResponse)
+    end
+
+    it "Should report the error to Sentry, tagged with the postcode" do
+      expect(Sentry).to receive(:capture_exception).and_wrap_original do |original, *args|
+        expect(Sentry.get_current_scope.tags).to include(postcode: normalised_postcode)
+        original.call(*args)
+      end
+
+      expect { get "/v1/locations?postcode=#{postcode}" }.to raise_error(OsPlacesApi::UnexpectedResponse)
     end
   end
 end
