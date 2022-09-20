@@ -11,8 +11,7 @@ module V1
         render json: locations
       rescue OsPlacesApi::InvalidPostcodeProvided
         render json: { errors: { "postcode": ["Invalid postcode provided"] } }, status: 400
-      rescue OsPlacesApi::NoResultsForPostcode => e
-        Sentry.capture_exception(e) # Ensure that this exception is still reported
+      rescue OsPlacesApi::NoResultsForPostcode
         render json: { errors: { "postcode": ["No results found for given postcode"] } }, status: 404
       end
     end

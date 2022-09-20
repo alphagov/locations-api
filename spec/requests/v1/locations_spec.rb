@@ -74,15 +74,16 @@ RSpec.describe "Locations V1 API" do
       expect(client).to receive(:locations_for_postcode).with(postcode).and_raise(OsPlacesApi::NoResultsForPostcode)
     end
 
-    it "Should return proper body with error message, and report the error to Sentry" do
-      expect(Sentry).to receive(:capture_exception).and_wrap_original do |original, *args|
-        expect(Sentry.get_current_scope.tags).to include(postcode: normalised_postcode)
-        original.call(*args)
-      end
-
+    it "Should return proper body with error message" do
       get "/v1/locations?postcode=#{postcode}"
 
       expect(response.body).to eq expected_validation_response
+    end
+
+    it "Should return 404 to the upstream app" do
+      get "/v1/locations?postcode=#{postcode}"
+
+      expect(response.status).to eq 404
     end
   end
 
