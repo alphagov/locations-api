@@ -116,7 +116,7 @@ GEM
     fugit (1.6.0)
       et-orbi (~> 1, >= 1.2.7)
       raabro (~> 1.4)
-    gds-api-adapters (82.0.0)
+    gds-api-adapters (83.0.0)
       addressable
       link_header
       null_logger
@@ -237,7 +237,7 @@ GEM
       ast (~> 2.4.1)
     parslet (2.0.0)
     pg (1.4.3)
-    plek (4.0.0)
+    plek (4.1.0)
     prometheus_exporter (2.0.3)
       webrick
     public_suffix (5.0.0)
