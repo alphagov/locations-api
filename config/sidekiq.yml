@@ -1,6 +1,8 @@
 ---
 :concurrency: 10
-:logfile: ./log/sidekiq.json.log
+<% if ENV.key?('SIDEKIQ_LOGFILE') %>
+:logfile: <%= ENV['SIDEKIQ_LOGFILE'] %>
+<% end %>
 :timeout: 4
 :max_retries: 1
 :queues:
