@@ -15,7 +15,9 @@ module OsPlacesApi
       response = get_api_response(postcode)
       raise NoResultsForPostcode if response["results"].nil?
 
-      Postcode.create!(postcode: postcode, results: response["results"]) unless Postcode.find_by(postcode: postcode)
+      if any_locations?(response["results"]) && !Postcode.find_by(postcode: postcode)
+        Postcode.create!(postcode: postcode, results: response["results"])
+      end
       build_locations(response["results"])
     end
 
@@ -23,7 +25,8 @@ module OsPlacesApi
       postcode = PostcodeHelper.normalise(postcode)
       response = get_api_response(postcode)
       record = Postcode.find_by(postcode: postcode)
-      if response["results"].nil?
+
+      if response["results"].nil? || !any_locations?(response["results"])
         record.destroy unless record.nil?
       elsif record.nil?
         Postcode.create!(postcode: postcode, results: response["results"])
@@ -47,11 +50,21 @@ module OsPlacesApi
       raise ServiceUnavailable if response.code == 503
     end
 
-    def build_locations(results)
-      locations = results.map { |result| result[result.keys.first] } # first key is either "LPI" or "DPA"
+    def filtered_locations(results)
+      results.map { |result| result[result.keys.first] } # first key is either "LPI" or "DPA"
         .uniq { |result_hash| result_hash["UPRN"] }
         .reject { |result_hash| NATIONAL_AUTHORITIES.include? result_hash["LOCAL_CUSTODIAN_CODE_DESCRIPTION"] }
         .map { |result_hash| LocationBuilder.new(result_hash).build_location }
+    end
+
+    def any_locations?(results)
+      !filtered_locations(results).empty?
+    end
+
+    def build_locations(results)
+      locations = filtered_locations(results)
+
+      raise NoResultsForPostcode if locations.empty?
 
       {
         "average_latitude" => locations.sum(&:latitude) / locations.size.to_f,
