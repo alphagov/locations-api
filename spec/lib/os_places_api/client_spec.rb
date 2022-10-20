@@ -171,6 +171,33 @@ RSpec.describe OsPlacesApi::Client do
     ]
   end
 
+  let(:filterable_response) do
+    # Reponse with valid locations, but where all locations have a
+    # LOCAL_CUSTODIAN_CODE_DESCRIPTION which causes them to be filtered
+    # out when processed.
+    {
+      "header": {
+        "uri": api_endpoint,
+        "query": "postcode=#{postcode}",
+        "offset": 0,
+        "totalresults": 1, # really 12, but we've omitted the other 11 in `results` above
+        "format": "JSON",
+        "dataset": "DPA,LPI",
+        "lr": "EN,CY",
+        "maxresults": 100,
+        "epoch": "87",
+        "output_srs": "WGS84",
+      },
+      "results": os_places_api_results_with_filterable_locations,
+    }
+  end
+
+  let(:os_places_api_results_with_filterable_locations) do
+    os_places_api_results.deep_dup.each do |location|
+      location.values.first["LOCAL_CUSTODIAN_CODE_DESCRIPTION"] = "ORDNANCE SURVEY"
+    end
+  end
+
   describe "#locations_for_postcode" do
     let(:locations) do
       [
@@ -303,6 +330,11 @@ RSpec.describe OsPlacesApi::Client do
         expect { client.locations_for_postcode(postcode) }.to raise_error(OsPlacesApi::NoResultsForPostcode)
       end
 
+      it "raises an exception if the postcode is in OS Places API datasets but all locations are filtered out" do
+        stub_request(:get, api_endpoint).to_return(status: 200, body: filterable_response.to_json)
+        expect { client.locations_for_postcode(postcode) }.to raise_error(OsPlacesApi::NoResultsForPostcode)
+      end
+
       it "raises an exception if the response isn't in the structure we expect" do
         stub_request(:get, api_endpoint).to_return(status: 200, body: "foo")
         expect { client.locations_for_postcode(postcode) }.to raise_error(OsPlacesApi::UnexpectedResponse)
@@ -400,8 +432,7 @@ RSpec.describe OsPlacesApi::Client do
     end
 
     it "should update the `updated_at` property even if no changes were made" do
-      updated_at = 1.day.ago
-      Postcode.create(postcode: postcode, results: successful_response[:results], updated_at: updated_at)
+      Postcode.create(postcode: postcode, results: successful_response[:results], updated_at: 1.day.ago)
       stub_request(:get, api_endpoint)
         .to_return(status: 200, body: successful_response.to_json)
 
@@ -413,6 +444,16 @@ RSpec.describe OsPlacesApi::Client do
       Postcode.create(postcode: postcode, results: [{}])
       stub_request(:get, api_endpoint)
         .to_return(status: 200, body: {}.to_json)
+
+      expect(Postcode.find_by(postcode: postcode)).not_to eq(nil)
+      client.update_postcode(postcode)
+      expect(Postcode.find_by(postcode: postcode)).to eq(nil)
+    end
+
+    it "should query OS Places API and delete the postcode if all locations are filtered out" do
+      Postcode.create(postcode: postcode, results: successful_response[:results], updated_at: 1.day.ago)
+      stub_request(:get, api_endpoint)
+        .to_return(status: 200, body: filterable_response.to_json)
 
       expect(Postcode.find_by(postcode: postcode)).not_to eq(nil)
       client.update_postcode(postcode)
