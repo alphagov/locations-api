@@ -216,7 +216,7 @@ RSpec.describe OsPlacesApi::Client do
 
     context "the postcode doesn't exist in the database" do
       before :each do
-        Postcode.where(postcode: postcode).map(&:destroy)
+        Postcode.where(postcode:).map(&:destroy)
       end
 
       it "should query OS Places API and return results" do
@@ -250,9 +250,9 @@ RSpec.describe OsPlacesApi::Client do
         stub_request(:get, api_endpoint)
           .to_return(status: 200, body: successful_response.to_json)
 
-        expect(Postcode.where(postcode: postcode).count).to eq(0)
+        expect(Postcode.where(postcode:).count).to eq(0)
         client.locations_for_postcode(postcode)
-        expect(Postcode.where(postcode: postcode).count).to eq(1)
+        expect(Postcode.where(postcode:).count).to eq(1)
       end
 
       it "raises an exception if the access token has expired" do
@@ -343,7 +343,7 @@ RSpec.describe OsPlacesApi::Client do
 
     context "the postcode exists in the database" do
       it "should return the cached data" do
-        Postcode.create(postcode: postcode, results: os_places_api_results)
+        Postcode.create(postcode:, results: os_places_api_results)
 
         expect(a_request(:get, api_endpoint)).not_to have_been_made
 
@@ -375,7 +375,7 @@ RSpec.describe OsPlacesApi::Client do
 
     context "there are two simultaneous requests for the same (new) postcode" do
       it "should not attempt to create the postcode twice" do
-        existing_record = Postcode.create(postcode: postcode, results: os_places_api_results)
+        existing_record = Postcode.create(postcode:, results: os_places_api_results)
         n = 0 # make the first call to `find_by` return `nil`; subsequent calls should work correctly
         allow(Postcode).to receive(:find_by) { (n += 1) == 1 ? nil : existing_record }
         stub_request(:get, api_endpoint)
@@ -416,48 +416,48 @@ RSpec.describe OsPlacesApi::Client do
         .to_return(status: 200, body: successful_response.to_json)
 
       client.update_postcode(postcode)
-      expect(Postcode.where(postcode: postcode).pluck(:results)).to eq([os_places_api_results])
+      expect(Postcode.where(postcode:).pluck(:results)).to eq([os_places_api_results])
     end
 
     it "should query OS Places API and update cached data if postcode exists" do
       old_results = os_places_api_results.first["DPA"].dup
       old_results["LNG"] = -1
       old_results["LAT"] = -1
-      Postcode.create(postcode: postcode, results: [{ "DPA" => old_results }])
+      Postcode.create(postcode:, results: [{ "DPA" => old_results }])
       stub_request(:get, api_endpoint)
         .to_return(status: 200, body: successful_response.to_json)
 
       client.update_postcode(postcode)
-      expect(Postcode.where(postcode: postcode).pluck(:results)).to eq([os_places_api_results])
+      expect(Postcode.where(postcode:).pluck(:results)).to eq([os_places_api_results])
     end
 
     it "should update the `updated_at` property even if no changes were made" do
-      Postcode.create(postcode: postcode, results: successful_response[:results], updated_at: 1.day.ago)
+      Postcode.create(postcode:, results: successful_response[:results], updated_at: 1.day.ago)
       stub_request(:get, api_endpoint)
         .to_return(status: 200, body: successful_response.to_json)
 
       client.update_postcode(postcode)
-      expect(Postcode.find_by(postcode: postcode).updated_at.strftime("%A")).to eq(Time.now.strftime("%A"))
+      expect(Postcode.find_by(postcode:).updated_at.strftime("%A")).to eq(Time.now.strftime("%A"))
     end
 
     it "should query OS Places API and delete the postcode if it was terminated" do
-      Postcode.create(postcode: postcode, results: [{}])
+      Postcode.create(postcode:, results: [{}])
       stub_request(:get, api_endpoint)
         .to_return(status: 200, body: {}.to_json)
 
-      expect(Postcode.find_by(postcode: postcode)).not_to eq(nil)
+      expect(Postcode.find_by(postcode:)).not_to eq(nil)
       client.update_postcode(postcode)
-      expect(Postcode.find_by(postcode: postcode)).to eq(nil)
+      expect(Postcode.find_by(postcode:)).to eq(nil)
     end
 
     it "should query OS Places API and delete the postcode if all locations are filtered out" do
-      Postcode.create(postcode: postcode, results: successful_response[:results], updated_at: 1.day.ago)
+      Postcode.create(postcode:, results: successful_response[:results], updated_at: 1.day.ago)
       stub_request(:get, api_endpoint)
         .to_return(status: 200, body: filterable_response.to_json)
 
-      expect(Postcode.find_by(postcode: postcode)).not_to eq(nil)
+      expect(Postcode.find_by(postcode:)).not_to eq(nil)
       client.update_postcode(postcode)
-      expect(Postcode.find_by(postcode: postcode)).to eq(nil)
+      expect(Postcode.find_by(postcode:)).to eq(nil)
     end
   end
 end
