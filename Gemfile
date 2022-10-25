@@ -10,6 +10,7 @@ gem "httparty"
 gem "pact", require: false
 gem "pact_broker-client"
 gem "pg"
+gem "sentry-sidekiq"
 gem "sidekiq-scheduler"
 gem "sidekiq-unique-jobs"
 
