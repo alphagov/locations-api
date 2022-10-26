@@ -199,7 +199,11 @@ GEM
     nokogiri (1.13.9)
       mini_portile2 (~> 2.8.0)
       racc (~> 1.4)
-    nokogiri (1.13.9-x86_64-darwin)
+    nokogiri (1.13.9-aarch64-linux)
+      racc (~> 1.4)
+    nokogiri (1.13.9-arm64-darwin)
+      racc (~> 1.4)
+    nokogiri (1.13.9-x86_64-linux)
       racc (~> 1.4)
     null_logger (0.0.1)
     pact (1.63.0)
@@ -356,6 +360,9 @@ GEM
       sentry-ruby (~> 5.4.2)
     sentry-ruby (5.4.2)
       concurrent-ruby (~> 1.0, >= 1.0.2)
+    sentry-sidekiq (5.4.2)
+      sentry-ruby (~> 5.4.2)
+      sidekiq (>= 3.0)
     sidekiq (5.2.10)
       connection_pool (~> 2.2, >= 2.2.2)
       rack (~> 2.0)
@@ -415,8 +422,10 @@ GEM
     zeitwerk (2.6.1)
 
 PLATFORMS
+  aarch64-linux
+  arm64-darwin
   ruby
-  x86_64-darwin-19
+  x86_64-linux
 
 DEPENDENCIES
   bootsnap
@@ -435,10 +444,11 @@ DEPENDENCIES
   rails (= 7.0.4)
   rspec-rails
   rubocop-govuk
+  sentry-sidekiq
   sidekiq-scheduler
   sidekiq-unique-jobs
   simplecov
   webmock
 
 BUNDLED WITH
-   2.2.16
+   2.3.24

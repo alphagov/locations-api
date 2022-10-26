@@ -1,5 +1,5 @@
 module PostcodeHelper
-  DISALLOWED_CHARS = /[`~,.<>;':"\/\[\]|{}()=_+-]|\s/.freeze
+  DISALLOWED_CHARS = /[`~,.<>;':"\/\[\]|{}()=_+-]|\s/
 
   def self.normalise(postcode)
     postcode.to_s.gsub(DISALLOWED_CHARS, "").upcase

@@ -9,7 +9,7 @@ task :populate_postcodes_table, [:path_to_csv] => :environment do |_, args|
   count = 0
   while (postcode = csv.shift)
     begin
-      Postcode.create!(postcode: postcode, results: "{}")
+      Postcode.create!(postcode:, results: "{}")
       count += 1
       puts "#{count} postcodes processed"
     rescue ActiveRecord::RecordInvalid

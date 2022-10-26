@@ -39,8 +39,8 @@ RSpec.describe Postcode, type: :model do
 
     it "prevents the same postcode being stored multiple times" do
       postcode = "E18 QS"
-      Postcode.create!(postcode: postcode)
-      expect { Postcode.create!(postcode: postcode) }.to raise_error(ActiveRecord::RecordInvalid)
+      Postcode.create!(postcode:)
+      expect { Postcode.create!(postcode:) }.to raise_error(ActiveRecord::RecordInvalid)
     end
 
     it "uses the PostcodeValidator" do
