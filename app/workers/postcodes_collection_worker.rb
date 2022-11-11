@@ -2,7 +2,7 @@ class PostcodesCollectionWorker
   include Sidekiq::Worker
   sidekiq_options queue: :queue_postcode, lock: :until_executed, lock_timeout: nil
 
-  POSTCODES_PER_SECOND = 3
+  POSTCODES_PER_SECOND = ENV.fetch("OS_PLACES_API_POSTCODES_PER_SECOND", 3)
 
   def perform
     postcodes = Postcode.uncached do
