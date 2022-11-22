@@ -124,9 +124,9 @@ GEM
       rest-client (~> 2.0)
     globalid (1.0.0)
       activesupport (>= 5.0)
-    govuk_app_config (4.10.1)
+    govuk_app_config (4.11.0)
       logstasher (~> 2.1)
-      plek (~> 4)
+      plek (>= 4, < 6)
       prometheus_exporter (~> 2.0)
       puma (>= 5.6, < 7.0)
       rack-proxy (~> 0.7)
@@ -241,8 +241,8 @@ GEM
       ast (~> 2.4.1)
     parslet (2.0.0)
     pg (1.4.5)
-    plek (4.1.0)
-    prometheus_exporter (2.0.3)
+    plek (5.0.0)
+    prometheus_exporter (2.0.6)
       webrick
     public_suffix (5.0.0)
     puma (6.0.0)
@@ -419,7 +419,7 @@ GEM
     websocket-extensions (0.1.5)
     xpath (3.2.0)
       nokogiri (~> 1.8)
-    zeitwerk (2.6.1)
+    zeitwerk (2.6.6)
 
 PLATFORMS
   aarch64-linux
