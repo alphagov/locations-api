@@ -42,6 +42,7 @@ RSpec.describe PostcodeValidator do
       "B33 8TH",
       "CR2 6XH",
       "DN55 1PT",
+      "KY11 4JU",
     ]
   end
 
