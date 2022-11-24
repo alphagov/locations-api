@@ -211,8 +211,8 @@ RSpec.describe OsPlacesApi::Client do
                      longitude: -0.0729935),
       ]
     end
-    let(:average_latitude) { 51.5144546 }
-    let(:average_longitude) { -0.0729934 }
+    let(:average_latitude) { 51.51446256666667 }
+    let(:average_longitude) { -0.07298533333333333 }
 
     context "the postcode doesn't exist in the database" do
       before :each do
@@ -239,8 +239,8 @@ RSpec.describe OsPlacesApi::Client do
 
         expect(client.locations_for_postcode(postcode).as_json).to eq(
           {
-            "average_latitude" => locations[0].latitude,
-            "average_longitude" => locations[0].longitude,
+            "average_latitude" => 51.514466600000006,
+            "average_longitude" => -0.07298125,
             "results" => [locations[0]].as_json,
           },
         )
@@ -327,11 +327,6 @@ RSpec.describe OsPlacesApi::Client do
           },
         }
         stub_request(:get, api_endpoint).to_return(status: 200, body: os_places_api_result_without_location.to_json)
-        expect { client.locations_for_postcode(postcode) }.to raise_error(OsPlacesApi::NoResultsForPostcode)
-      end
-
-      it "raises an exception if the postcode is in OS Places API datasets but all locations are filtered out" do
-        stub_request(:get, api_endpoint).to_return(status: 200, body: filterable_response.to_json)
         expect { client.locations_for_postcode(postcode) }.to raise_error(OsPlacesApi::NoResultsForPostcode)
       end
 
