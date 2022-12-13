@@ -60,7 +60,10 @@ module OsPlacesApi
     end
 
     def filtered_locations(results)
-      filtered_hash = results_hash_with_uniq_uprns(results).reject { |r| NATIONAL_AUTHORITIES.include? r["LOCAL_CUSTODIAN_CODE_DESCRIPTION"] }
+      filtered_hash = results_hash_with_uniq_uprns(results).reject do |r|
+        (NATIONAL_AUTHORITIES.include? r["LOCAL_CUSTODIAN_CODE_DESCRIPTION"]) ||
+          (r["POSTAL_ADDRESS_CODE"] == "N")
+      end
       hash_to_locations(filtered_hash)
     end
 

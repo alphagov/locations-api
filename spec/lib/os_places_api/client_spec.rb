@@ -246,6 +246,20 @@ RSpec.describe OsPlacesApi::Client do
         )
       end
 
+      it "should include records with POSTAL_ADDRESS_CODE='N' in averages, but filter them from results" do
+        os_places_api_results[1]["LPI"]["POSTAL_ADDRESS_CODE"] = "N"
+        stub_request(:get, api_endpoint)
+          .to_return(status: 200, body: successful_response.to_json)
+
+        expect(client.locations_for_postcode(postcode).as_json).to eq(
+          {
+            "average_latitude" => average_latitude,
+            "average_longitude" => average_longitude,
+            "results" => [locations[0]].as_json,
+          },
+        )
+      end
+
       it "should cache the response from a successful request" do
         stub_request(:get, api_endpoint)
           .to_return(status: 200, body: successful_response.to_json)
