@@ -439,6 +439,7 @@ DEPENDENCIES
   govuk_test
   httparty
   listen
+  mail (~> 2.7.1)
   pact
   pact_broker-client
   pg
