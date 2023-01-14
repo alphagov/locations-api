@@ -2,7 +2,7 @@ source "https://rubygems.org"
 
 gem "rails", "7.0.4"
 
-gem "bootsnap"
+gem "bootsnap", require: false
 gem "gds-api-adapters"
 gem "govuk_app_config"
 gem "govuk_sidekiq"
