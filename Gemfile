@@ -7,7 +7,6 @@ gem "gds-api-adapters"
 gem "govuk_app_config"
 gem "govuk_sidekiq"
 gem "httparty"
-gem "mail", "~> 2.7.1"  # TODO: remove once https://github.com/mikel/mail/issues/1489 is fixed.
 gem "pact", require: false
 gem "pact_broker-client"
 gem "pg"
