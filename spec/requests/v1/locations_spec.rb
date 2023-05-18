@@ -124,9 +124,9 @@ RSpec.describe "Locations V1 API" do
     end
 
     it "Should report the error to Sentry, tagged with the postcode" do
-      expect(Sentry).to receive(:capture_exception).and_wrap_original do |original, *args|
+      expect(Sentry).to receive(:capture_exception).and_wrap_original do |original, *args, **kwargs|
         expect(Sentry.get_current_scope.tags).to include(postcode: normalised_postcode)
-        original.call(*args)
+        original.call(*args, **kwargs)
       end
 
       expect { get "/v1/locations?postcode=#{postcode}" }.to raise_error(OsPlacesApi::UnexpectedResponse)
