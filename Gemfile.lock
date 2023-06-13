@@ -124,7 +124,7 @@ GEM
       rest-client (~> 2.0)
     globalid (1.1.0)
       activesupport (>= 5.0)
-    govuk_app_config (8.0.0)
+    govuk_app_config (8.0.1)
       logstasher (~> 2.1)
       plek (>= 4, < 6)
       prometheus_exporter (~> 2.0)
@@ -242,7 +242,7 @@ GEM
     puma (6.3.0)
       nio4r (~> 2.0)
     raabro (1.4.0)
-    racc (1.6.2)
+    racc (1.7.0)
     rack (2.2.7)
     rack-proxy (0.7.6)
       rack
