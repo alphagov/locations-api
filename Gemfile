@@ -4,6 +4,7 @@ ruby "~> 3.2.0"
 
 gem "rails", "7.0.5"
 
+gem "aws-sdk-s3"
 gem "bootsnap", require: false
 gem "gds-api-adapters"
 gem "govuk_app_config"

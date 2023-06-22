@@ -5,6 +5,7 @@
 :queues:
   # See here to understand priorities: https://github.com/mperham/sidekiq/wiki/Advanced-Options#queues
   # Use powers of 2: higher priority groups are checked twice as often.
+  - [queue_ons, 16]
   - [update_postcode, 8]
   - [queue_postcode, 1]
 :scheduler:
