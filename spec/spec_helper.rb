@@ -7,6 +7,8 @@ require File.expand_path("../config/environment", __dir__)
 require "rspec/rails"
 require "webmock/rspec"
 
+Rails.application.load_tasks
+
 Dir[Rails.root.join("spec/support/**/*.rb")].sort.each { |f| require f }
 GovukTest.configure
 WebMock.disable_net_connect!(allow_localhost: true)
