@@ -8,27 +8,42 @@ RSpec.describe "Locations V1 API" do
 
   context "Successful call" do
     let(:postcode) { "E1 8QS" }
+    let(:normalised_postcode) { "E18QS" }
+    let(:address1) do
+      {
+        address: "1, WHITECHAPEL HIGH STREET, LONDON, E1 8QS",
+        latitude: 51.5144547,
+        longitude: -0.0729933,
+        local_custodian_code: 5900,
+      }
+    end
+    let(:address2) do
+      {
+        address: "2, WHITECHAPEL HIGH STREET, LONDON, E1 8QS",
+        latitude: 51.5144545,
+        longitude: -0.0729935,
+        local_custodian_code: 5900,
+      }
+    end
+    let(:api_locations) do
+      [
+        { "DPA" => address1 },
+        { "DPA" => address2 },
+      ]
+    end
     let(:locations) do
       {
-        "average_latitude" => 51.51445475,
-        "average_longitude" => -0.07299335,
-        "results" => [
-          Location.new(address: "1, WHITECHAPEL HIGH STREET, LONDON, E1 8QS",
-                       latitude: 51.5144547,
-                       longitude: -0.0729933,
-                       local_custodian_code: 5900),
-          Location.new(address: "2, WHITECHAPEL HIGH STREET, LONDON, E1 8QS",
-                       latitude: 51.5144548,
-                       longitude: -0.0729934,
-                       local_custodian_code: 5900),
-        ],
+        "source" => "Ordnance Survey",
+        "average_longitude" => -0.07298533333333333,
+        "average_latitude" => 51.51446256666667,
+        "results" => [Location.new(address1), Location.new(address2)],
       }
     end
 
     before do
       client = double("client")
       allow(OsPlacesApi::Client).to receive(:new).and_return(client)
-      expect(client).to receive(:locations_for_postcode).with(postcode).and_return(locations)
+      expect(client).to(receive(:retrieve_locations_for_postcode).with(normalised_postcode)).and_return(OsPlacesApi::LocationResults.new(os_places_api_results))
     end
 
     it "Should return proper body" do
@@ -71,7 +86,7 @@ RSpec.describe "Locations V1 API" do
     before do
       client = double("client")
       allow(OsPlacesApi::Client).to receive(:new).and_return(client)
-      expect(client).to receive(:locations_for_postcode).with(postcode).and_raise(OsPlacesApi::NoResultsForPostcode)
+      expect(client).to receive(:retrieve_locations_for_postcode).with(normalised_postcode).and_raise(OsPlacesApi::NoResultsForPostcode)
     end
 
     it "Should return proper body with error message" do
@@ -97,7 +112,7 @@ RSpec.describe "Locations V1 API" do
     before do
       client = double("client")
       allow(OsPlacesApi::Client).to receive(:new).and_return(client)
-      expect(client).to receive(:locations_for_postcode).with(postcode).and_raise(OsPlacesApi::InvalidPostcodeProvided)
+      expect(client).to receive(:retrieve_locations_for_postcode).with(normalised_postcode).and_raise(OsPlacesApi::InvalidPostcodeProvided)
     end
 
     it "Should return proper body with error message" do
@@ -120,7 +135,7 @@ RSpec.describe "Locations V1 API" do
     before do
       client = double("client")
       allow(OsPlacesApi::Client).to receive(:new).and_return(client)
-      expect(client).to receive(:locations_for_postcode).with(postcode).and_raise(OsPlacesApi::UnexpectedResponse)
+      expect(client).to receive(:retrieve_locations_for_postcode).with(normalised_postcode).and_raise(OsPlacesApi::UnexpectedResponse)
     end
 
     it "Should report the error to Sentry, tagged with the postcode" do
