@@ -1,3 +1,5 @@
+require "spec_helper"
+
 RSpec.describe ProcessPostcodeWorker do
   describe "#perform" do
     let(:postcode) { "E18QS" }

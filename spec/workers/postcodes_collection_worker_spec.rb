@@ -1,3 +1,5 @@
+require "spec_helper"
+
 RSpec.describe PostcodesCollectionWorker do
   describe "#perform" do
     before do
