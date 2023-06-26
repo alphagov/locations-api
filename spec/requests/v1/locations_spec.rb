@@ -6,7 +6,7 @@ RSpec.describe "Locations V1 API" do
     ENV["OS_PLACES_API_SECRET"] = "some_secret"
   end
 
-  context "Successful call" do
+  context "Successful call for an OS Places API postcode" do
     let(:postcode) { "E1 8QS" }
     let(:normalised_postcode) { "E18QS" }
     let(:address1) do
@@ -50,6 +50,85 @@ RSpec.describe "Locations V1 API" do
       get "/v1/locations?postcode=#{postcode}"
 
       expect(response.body).to eq locations.to_json
+    end
+  end
+
+  context "Successful call for an ONSPD postcode" do
+    let(:postcode) { "AB1 0AA" }
+    let(:normalised_postcode) { "AB10AA" }
+
+    context "which is small and non-retired" do
+      let(:locations) do
+        {
+          "source" => "Office of National Statistics",
+          "average_longitude" => -2.242851,
+          "average_latitude" => 57.101474,
+          "results" => [],
+          "extra_information" => {
+            "source" => "ONS source updated infrequently",
+          },
+        }
+      end
+      let(:results) do
+        [
+          {
+            "ONS" => {
+              "AVG_LNG" => -2.242851,
+              "AVG_LAT" => 57.101474,
+              "TYPE" => "S",
+              "DOTERM" => "",
+            },
+          },
+        ]
+      end
+
+      before do
+        Postcode.create!(postcode: normalised_postcode, source: :onspd, retired: false, results:)
+      end
+
+      it "Should return proper body with source warning" do
+        get "/v1/locations?postcode=#{postcode}"
+
+        expect(response.body).to eq locations.to_json
+      end
+    end
+
+    context "which is large and retired" do
+      let(:locations) do
+        {
+          "source" => "Office of National Statistics",
+          "average_longitude" => -2.242851,
+          "average_latitude" => 57.101474,
+          "results" => [],
+          "extra_information" => {
+            "source" => "ONS source updated infrequently",
+            "retired" => "Postcode was retired in April 2004",
+            "large" => "Postcode is a large user postcode",
+          },
+        }
+      end
+      let(:results) do
+        [
+          {
+            "ONS" => {
+              "AVG_LNG" => -2.242851,
+              "AVG_LAT" => 57.101474,
+              "TYPE" => "L",
+              "DOTERM" => "April 2004",
+            },
+          },
+        ]
+      end
+
+      before do
+        Postcode.create!(postcode: normalised_postcode, source: :onspd, retired: true, results:)
+      end
+
+      it "Should return proper body with source, size, and retirement warning" do
+        get "/v1/locations?postcode=#{postcode}"
+
+        expect(response.body).to eq locations.to_json
+      end
     end
   end
 
@@ -145,6 +224,20 @@ RSpec.describe "Locations V1 API" do
       end
 
       expect { get "/v1/locations?postcode=#{postcode}" }.to raise_error(OsPlacesApi::UnexpectedResponse)
+    end
+  end
+
+  context "If the database is corrupted with invalid source information" do
+    let(:postcode) { "AB1 0AA" }
+    let(:normalised_postcode) { "AB10AA" }
+
+    before do
+      record = Postcode.create!(postcode: normalised_postcode, source: :onspd, retired: false, results: [])
+      ActiveRecord::Base.connection.execute("UPDATE postcodes SET source='unknown' WHERE id=#{record.id}")
+    end
+
+    it "returns a 500 to the upstream app" do
+      expect { get "/v1/locations?postcode=#{postcode}" }.to raise_error(LocationsPresenter::UnknownSource)
     end
   end
 end
