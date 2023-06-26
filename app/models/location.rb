@@ -3,13 +3,6 @@ class Location
 
   attr_accessor :address, :longitude, :latitude, :local_custodian_code
 
-  def ==(other)
-    address == other.address &&
-      longitude == other.longitude &&
-      latitude == other.latitude &&
-      local_custodian_code == other.local_custodian_code
-  end
-
   def to_hash
     {
       "address" => address,
