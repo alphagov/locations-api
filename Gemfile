@@ -6,7 +6,7 @@ gem "rails", "7.0.6"
 
 gem "bootsnap", require: false
 gem "gds-api-adapters"
-gem "govuk_app_config"
+gem "govuk_app_config", github: "alphagov/govuk_app_config", branch: "sentry-otel"
 gem "govuk_sidekiq"
 gem "httparty"
 gem "pact", require: false
