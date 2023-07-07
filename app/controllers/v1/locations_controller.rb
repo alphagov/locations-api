@@ -5,6 +5,8 @@ module V1
     def index
       Sentry.set_tags postcode: PostcodeHelper.normalise(params[:postcode])
 
+      raise "Oops this is a bug"
+
       token_manager = OsPlacesApi::AccessTokenManager.new
       begin
         locations = OsPlacesApi::Client.new(token_manager).locations_for_postcode(params[:postcode])
