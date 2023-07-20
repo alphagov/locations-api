@@ -116,7 +116,7 @@ GEM
     fugit (1.8.1)
       et-orbi (~> 1, >= 1.2.7)
       raabro (~> 1.4)
-    gds-api-adapters (88.2.0)
+    gds-api-adapters (89.0.0)
       addressable
       link_header
       null_logger
@@ -439,7 +439,7 @@ GEM
     plek (5.0.0)
     prometheus_exporter (2.0.8)
       webrick
-    public_suffix (5.0.1)
+    public_suffix (5.0.3)
     puma (6.3.0)
       nio4r (~> 2.0)
     raabro (1.4.0)
