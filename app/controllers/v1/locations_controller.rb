@@ -5,10 +5,8 @@ module V1
     def index
       Sentry.set_tags postcode: PostcodeHelper.normalise(params[:postcode])
 
-      token_manager = OsPlacesApi::AccessTokenManager.new
       begin
-        locations = OsPlacesApi::Client.new(token_manager).locations_for_postcode(params[:postcode])
-        render json: locations
+        render json: PostcodeManager.new.locations_for_postcode(params[:postcode])
       rescue OsPlacesApi::InvalidPostcodeProvided
         render json: { errors: { "postcode": ["Invalid postcode provided"] } }, status: 400
       rescue OsPlacesApi::NoResultsForPostcode
