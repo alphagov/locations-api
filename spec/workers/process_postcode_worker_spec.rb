@@ -1,11 +1,13 @@
+require "spec_helper"
+
 RSpec.describe ProcessPostcodeWorker do
   describe "#perform" do
     let(:postcode) { "E18QS" }
 
     it "updates the given postcode" do
-      stubbed_client = double("OsPlacesApi::Client")
+      stubbed_client = double("PostcodeManager")
 
-      expect(OsPlacesApi::Client).to receive(:new) { stubbed_client }
+      expect(PostcodeManager).to receive(:new) { stubbed_client }
       expect(stubbed_client).to receive(:update_postcode).with(postcode)
 
       ProcessPostcodeWorker.new.perform(postcode)

@@ -4,6 +4,7 @@ ruby "~> 3.2.0"
 
 gem "rails", "7.0.8"
 
+gem "aws-sdk-s3"
 gem "bootsnap", require: false
 gem "gds-api-adapters"
 gem "govuk_app_config"
@@ -12,6 +13,7 @@ gem "httparty"
 gem "pact", require: false
 gem "pact_broker-client"
 gem "pg"
+gem "rubyzip"
 gem "sentry-sidekiq"
 gem "sidekiq-scheduler"
 gem "sidekiq-unique-jobs"

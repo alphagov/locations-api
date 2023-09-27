@@ -1,9 +1,7 @@
 require "rake"
 require "spec_helper"
 
-Rails.application.load_tasks
-
-RSpec.describe "Tasks" do
+RSpec.describe "populate_postcodes_table task" do
   describe "when running the task" do
     before do
       Postcode.destroy_all
@@ -15,7 +13,7 @@ RSpec.describe "Tasks" do
       expect(Postcode.count).to eq(0)
 
       task.reenable
-      task.invoke("spec/lib/tasks/postcodes.csv")
+      expect { task.invoke("spec/lib/tasks/postcodes.csv") }.to output.to_stdout
 
       expect(Postcode.count).to eq(3)
     end
@@ -25,7 +23,7 @@ RSpec.describe "Tasks" do
       expect(Postcode.count).to eq(1)
 
       task.reenable
-      task.invoke("spec/lib/tasks/postcodes.csv")
+      expect { task.invoke("spec/lib/tasks/postcodes.csv") }.to output.to_stdout
 
       expect(Postcode.count).to eq(3)
     end
@@ -36,7 +34,7 @@ RSpec.describe "Tasks" do
       expect(Postcode.count).to eq(1)
 
       task.reenable
-      task.invoke("spec/lib/tasks/postcodes.csv")
+      expect { task.invoke("spec/lib/tasks/postcodes.csv") }.to output.to_stdout
 
       expect(Postcode.find_by(postcode: "SE12TL").results).to eq(existing_result)
     end

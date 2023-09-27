@@ -53,4 +53,16 @@ RSpec.describe Postcode, type: :model do
       expect { Postcode.create!(postcode: "1AA 1BB") }.to raise_error(ActiveRecord::RecordInvalid)
     end
   end
+
+  describe "Defaults" do
+    let(:postcode) { Postcode.create!(postcode: "E1 8QS") }
+
+    it "has a default source of os_places" do
+      expect(postcode.source).to eq("os_places")
+    end
+
+    it "is active by default" do
+      expect(postcode.retired?).to be false
+    end
+  end
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_01_13_154245) do
+ActiveRecord::Schema[7.0].define(version: 2023_06_05_101124) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -19,7 +19,11 @@ ActiveRecord::Schema[7.0].define(version: 2022_01_13_154245) do
     t.json "results"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "source", default: "os_places", null: false
+    t.boolean "retired", default: false, null: false
     t.index ["postcode"], name: "index_postcodes_on_postcode", unique: true
+    t.index ["retired"], name: "index_postcodes_on_retired"
+    t.index ["source"], name: "index_postcodes_on_source"
   end
 
 end
