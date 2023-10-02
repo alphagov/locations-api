@@ -36,6 +36,9 @@ Pact.provider_states_for "GDS API Adapters" do
   set_up do
     ENV["OS_PLACES_API_KEY"] = "some_key"
     ENV["OS_PLACES_API_SECRET"] = "some_secret"
+  end
+
+  tear_down do
     postcode = Postcode.find_by(postcode: "SW1A1AA")
     postcode.destroy unless postcode.nil?
   end
