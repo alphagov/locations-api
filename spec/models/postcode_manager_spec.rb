@@ -106,7 +106,19 @@ RSpec.describe PostcodeManager, type: :model do
         Postcode.create!(postcode: normalised_postcode)
       end
 
-      context "the api returns no locations" do
+      context "the api returns no results" do
+        before do
+          mock_os_client_no_results
+        end
+
+        it "deletes the postcode record" do
+          expect(Postcode.where(postcode: normalised_postcode).count).to eq(1)
+          postcode_manager.update_postcode(postcode)
+          expect(Postcode.where(postcode: normalised_postcode).count).to eq(0)
+        end
+      end
+
+      context "the api returns no valid locations" do
         before do
           mock_os_client_empty_results
         end

@@ -12,14 +12,15 @@ class PostcodeManager
     normalised_postcode = PostcodeHelper.normalise(postcode)
     record = Postcode.os_places.find_by(postcode: normalised_postcode)
     location_results = location_results_from_os_places_api(normalised_postcode)
+    raise OsPlacesApi::NoResultsForPostcode if location_results.empty?
 
-    if location_results.empty?
-      record.destroy if record
-    elsif record
+    if record
       record.update(results: location_results.results) && record.touch
     else
       Postcode.create!(postcode: normalised_postcode, source: "os_places", results: location_results.results)
     end
+  rescue OsPlacesApi::NoResultsForPostcode
+    record.destroy if record
   end
 
 private
