@@ -13,6 +13,7 @@ gem "httparty"
 gem "pact", require: false
 gem "pact_broker-client"
 gem "pg"
+gem "psych", "<5"
 gem "rubyzip"
 gem "sentry-sidekiq"
 gem "sidekiq-scheduler"
