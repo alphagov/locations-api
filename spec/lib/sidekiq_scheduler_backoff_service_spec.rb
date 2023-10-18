@@ -14,7 +14,7 @@ RSpec.describe SidekiqSchedulerBackoffService do
 
       it "sets the scheduler to maximum speed and reloads the schedule" do
         subject.record_failure
-        expect(scheduled_interval).to eq(["#{min_interval}s"])
+        expect(scheduled_interval).to eq("#{min_interval}s")
       end
     end
 
@@ -25,7 +25,7 @@ RSpec.describe SidekiqSchedulerBackoffService do
 
       it "halves the scheduler speed and reloads the schedule" do
         subject.record_failure
-        expect(scheduled_interval).to eq(["#{max_interval}s"])
+        expect(scheduled_interval).to eq("#{max_interval}s")
       end
     end
 
@@ -36,7 +36,7 @@ RSpec.describe SidekiqSchedulerBackoffService do
 
       it "does nothing" do
         subject.record_failure
-        expect(scheduled_interval).to eq(["#{max_interval}s"])
+        expect(scheduled_interval).to eq("#{max_interval}s")
       end
     end
 
@@ -47,7 +47,7 @@ RSpec.describe SidekiqSchedulerBackoffService do
 
       it "sets the scheduler to minimum speed and reloads the schedule" do
         subject.record_failure
-        expect(scheduled_interval).to eq(["#{max_interval}s"])
+        expect(scheduled_interval).to eq("#{max_interval}s")
       end
     end
   end
@@ -60,7 +60,7 @@ RSpec.describe SidekiqSchedulerBackoffService do
 
       it "sets the scheduler to maximum speed and reloads the schedule" do
         subject.record_success
-        expect(scheduled_interval).to eq(["#{min_interval}s"])
+        expect(scheduled_interval).to eq("#{min_interval}s")
       end
     end
 
@@ -71,7 +71,7 @@ RSpec.describe SidekiqSchedulerBackoffService do
 
       it "does nothing" do
         subject.record_success
-        expect(scheduled_interval).to eq(["#{min_interval}s"])
+        expect(scheduled_interval).to eq("#{min_interval}s")
       end
     end
 
@@ -82,7 +82,7 @@ RSpec.describe SidekiqSchedulerBackoffService do
 
       it "decremenincrements the scheduler speed by 1 second and reloads the schedule" do
         subject.record_success
-        expect(scheduled_interval).to eq(["#{(min_interval * 4) - 1}s"])
+        expect(scheduled_interval).to eq("#{(min_interval * 4) - 1}s")
       end
     end
 
@@ -93,14 +93,14 @@ RSpec.describe SidekiqSchedulerBackoffService do
 
       it "sets the scheduler to minimum speed and reloads the schedule" do
         subject.record_success
-        expect(scheduled_interval).to eq(["#{max_interval}s"])
+        expect(scheduled_interval).to eq("#{max_interval}s")
       end
     end
   end
 end
 
 def set_scheduled_interval(interval)
-  Sidekiq.set_schedule(name.to_s, { "every" => ["#{interval}s"], "class" => "PostcodesCollectionWorker" })
+  Sidekiq.set_schedule(name.to_s, { "every" => "#{interval}s", "class" => "PostcodesCollectionWorker" })
 end
 
 def scheduled_interval
