@@ -23,11 +23,11 @@ private
 
   def current_interval
     schedule = Sidekiq.get_schedule[name]
-    Integer(schedule["every"].first.chop)
+    Integer(schedule["every"].chop)
   end
 
   def restart_schedule(target_interval)
     schedule = Sidekiq.get_schedule[name]
-    Sidekiq.set_schedule(name, schedule.merge("every" => ["#{target_interval}s"]))
+    Sidekiq.set_schedule(name, schedule.merge("every" => "#{target_interval}s"))
   end
 end
