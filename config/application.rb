@@ -21,7 +21,12 @@ Bundler.require(*Rails.groups)
 module LocationsApi
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 7.0
+    config.load_defaults 7.1
+
+    # Please, add to the `ignore` list any other `lib` subdirectories that do
+    # not contain `.rb` files, or that should not be reloaded or eager loaded.
+    # Common ones are `templates`, `generators`, or `middleware`, for example.
+    config.autoload_lib(ignore: %w[assets tasks])
 
     # Configuration for the application, engines, and railties goes here.
     #
@@ -30,7 +35,6 @@ module LocationsApi
     #
     config.time_zone = "London"
     # config.eager_load_paths << Rails.root.join("extras")
-    config.autoload_paths << Rails.root.join("lib")
 
     # Only loads a smaller set of middleware suitable for API only apps.
     # Middleware like session, flash, cookies can be added back manually.
