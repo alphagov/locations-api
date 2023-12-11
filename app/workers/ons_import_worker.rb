@@ -12,7 +12,7 @@ class OnsImportWorker < OnsBaseWorker
       puts("Importing G82 3PW") if row["pcds"] == "G82 3PW"
       postcode = PostcodeHelper.normalise(row["pcds"])
 
-      puts("Skipping #{postcode}") if Postcode.os_places.where(postcode:).any? && if row["pcds"] == "G82 3PW"
+      puts("Skipping #{postcode}") if Postcode.os_places.where(postcode:).any? && row["pcds"] == "G82 3PW"
       next if Postcode.os_places.where(postcode:).any?
 
       termination_date = parse_termination_date(row["doterm"])
