@@ -9,7 +9,10 @@ class OnsImportWorker < OnsBaseWorker
     )
 
     CSV.foreach(temp_csv_file.path, headers: true) do |row|
+      puts("Importing G82 3PW") if row["pcds"] == "G82 3PW"
       postcode = PostcodeHelper.normalise(row["pcds"])
+
+      puts("Skipping #{postcode}") if Postcode.os_places.where(postcode:).any? && if row["pcds"] == "G82 3PW"
       next if Postcode.os_places.where(postcode:).any?
 
       termination_date = parse_termination_date(row["doterm"])
@@ -29,8 +32,11 @@ class OnsImportWorker < OnsBaseWorker
       existing_record = Postcode.onspd.find_by(postcode:)
       if existing_record
         existing_record.update(retired:, results:)
+        puts("Updating existing record for G82 3PW") if row["pcds"] == "G82 3PW"
       else
-        Postcode.create(postcode:, source: "onspd", retired:, results:)
+        record = Postcode.create(postcode:, source: "onspd", retired:, results:)
+        puts("Creating new record for G82 3PW") if row["pcds"] == "G82 3PW"
+        puts("Is record valid for G82 3PW? #{record.valid?}") if row["pcds"] == "G82 3PW"
       end
     end
   rescue StandardError => e
