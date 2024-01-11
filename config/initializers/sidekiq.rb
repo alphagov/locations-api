@@ -10,6 +10,8 @@ Sidekiq.configure_server do |config|
     chain.add SidekiqUniqueJobs::Middleware::Server
   end
 
+  config.logger.level = Rails.logger.level
+
   SidekiqUniqueJobs::Server.configure(config)
 end
 
