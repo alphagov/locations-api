@@ -11,3 +11,6 @@
     queue_oldest_postcodes_for_updating:
       every: '1s'
       class: PostcodesCollectionWorker
+    queue_ons_check_updates:
+      every: '1d'
+      class: OnsUpdateCheckWorker
