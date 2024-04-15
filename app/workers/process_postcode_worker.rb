@@ -5,8 +5,7 @@ class ProcessPostcodeWorker
   def perform(postcode)
     PostcodeManager.new.update_postcode(postcode)
     Rails.application.config.sidekiq_scheduler_backoff_service.record_success
-  rescue OsPlacesApi::ClientError => e
-    GovukError.notify(e)
+  rescue OsPlacesApi::ClientError
     Rails.application.config.sidekiq_scheduler_backoff_service.record_failure
   end
 end
