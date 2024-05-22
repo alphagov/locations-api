@@ -1,6 +1,6 @@
 # Updating ONS Postcode Data
 
-High-quality postcode data using in Locations API comes from the Ordnance Survey. But that dataset does not include all postcodes active (for instance, it excludes large user postcodes), nor does it include historical postcodes that people may still be using. To support this, we can import lower-quality postcode information from the Office for National Statistics Postcode Directory. The system will always use the high quality data where possible, but can use the low-quality data for geolocating in imminence datasets and lookups.
+High-quality postcode data using in Locations API comes from the Ordnance Survey. But that dataset does not include all postcodes active (for instance, it excludes large user postcodes), nor does it include historical postcodes that people may still be using. To support this, we can import lower-quality postcode information from the Office for National Statistics Postcode Directory. The system will always use the high quality data where possible, but can use the low-quality data for geolocating in Places Manager datasets and lookups.
 
 The Postcode Directory is updated a couple of times a year. An OnsUpdateCheckWorker checks the ONS rss feed once a day to see if a new version of the postcode data has been published, and if so starts an OnsDownloadWorker. This downloads the relevant file, splits out the multi-csv directory into an S3 bucket, and starts a single OnsImportWorker for each of the files.
 
