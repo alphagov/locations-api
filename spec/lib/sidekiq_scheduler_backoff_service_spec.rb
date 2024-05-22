@@ -50,6 +50,15 @@ RSpec.describe SidekiqSchedulerBackoffService do
         expect(scheduled_interval).to eq("#{max_interval}s")
       end
     end
+
+    context "when the schedule is missing" do
+      subject { SidekiqSchedulerBackoffService.new(name: "non-existing-queue", min_interval:, max_interval:) }
+
+      it "records the problem to GovukError" do
+        expect(GovukError).to receive(:notify)
+        subject.record_failure
+      end
+    end
   end
 
   describe "#record_success" do
@@ -94,6 +103,15 @@ RSpec.describe SidekiqSchedulerBackoffService do
       it "sets the scheduler to minimum speed and reloads the schedule" do
         subject.record_success
         expect(scheduled_interval).to eq("#{max_interval}s")
+      end
+    end
+
+    context "when the schedule is missing" do
+      subject { SidekiqSchedulerBackoffService.new(name: "non-existing-queue", min_interval:, max_interval:) }
+
+      it "records the problem to GovukError" do
+        expect(GovukError).to receive(:notify)
+        subject.record_success
       end
     end
   end

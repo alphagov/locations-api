@@ -11,12 +11,16 @@ class SidekiqSchedulerBackoffService
     initial_interval = current_interval
     target_interval = [initial_interval - 1, min_interval].max
     restart_schedule(target_interval) if target_interval != initial_interval
+  rescue StandardError
+    notify_missing_schedule
   end
 
   def record_failure
     initial_interval = current_interval
     target_interval = [initial_interval * 2, max_interval].min
     restart_schedule(target_interval) if target_interval != initial_interval
+  rescue StandardError
+    notify_missing_schedule
   end
 
 private
@@ -29,5 +33,12 @@ private
   def restart_schedule(target_interval)
     schedule = Sidekiq.get_schedule[name]
     Sidekiq.set_schedule(name, schedule.merge("every" => "#{target_interval}s"))
+  end
+
+  def notify_missing_schedule
+    GovukError.notify(
+      "Queue schedule missing",
+      extra: { available_schedules: Sidekiq.get_schedule.keys },
+    )
   end
 end
