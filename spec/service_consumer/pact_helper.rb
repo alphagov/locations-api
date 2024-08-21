@@ -1,5 +1,6 @@
 ENV["PACT_DO_NOT_TRACK"] = "true"
 
+require "active_support"
 require "pact/provider/rspec"
 require "webmock/rspec"
 require "factory_bot_rails"
