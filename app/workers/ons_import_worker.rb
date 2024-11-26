@@ -1,3 +1,5 @@
+require "csv"
+
 class OnsImportWorker < OnsBaseWorker
   def perform(s3_key_name)
     temp_csv_file = Tempfile.new("ONSPD.csv")
