@@ -3,7 +3,7 @@ class Postcode < ApplicationRecord
   validates :postcode, uniqueness: true
   before_validation :normalize_postcode
 
-  enum source: %i[os_places onspd].index_with(&:to_s)
+  enum :source, %i[os_places onspd].index_with(&:to_s)
   scope :active, -> { where(retired: false) }
   scope :retired, -> { where(retired: true) }
 
