@@ -142,6 +142,57 @@ RSpec.describe PostcodeManager, type: :model do
       end
     end
 
+    context "the postcode exists in the database as onspd record" do
+      before do
+        Postcode.create!(postcode: normalised_postcode, source: "onspd", results: [], updated_at: 1.day.ago)
+      end
+
+      context "the api returns no results" do
+        before do
+          mock_os_client_no_results
+        end
+
+        it "touches the postcode record but does not update it" do
+          postcode_manager.update_postcode(postcode)
+          record = Postcode.where(postcode: normalised_postcode).first
+
+          expect(record.results).to eq([])
+          expect(record.updated_at).to be_within(1.minute).of(Time.zone.now)
+          expect(record.source).to eq("onspd")
+        end
+      end
+
+      context "the api returns no valid locations" do
+        before do
+          mock_os_client_empty_results
+        end
+
+        it "touches the postcode record but does not update it" do
+          postcode_manager.update_postcode(postcode)
+          record = Postcode.where(postcode: normalised_postcode).first
+
+          expect(record.results).to eq([])
+          expect(record.updated_at).to be_within(1.minute).of(Time.zone.now)
+          expect(record.source).to eq("onspd")
+        end
+      end
+
+      context "the api returns locations" do
+        before do
+          mock_os_client_good_results
+        end
+
+        it "updates the postcode record" do
+          postcode_manager.update_postcode(postcode)
+          record = Postcode.where(postcode: normalised_postcode).first
+
+          expect(record.results).to eq(os_places_api_results)
+          expect(record.updated_at).to be_within(1.minute).of(Time.zone.now)
+          expect(record.source).to eq("os_places")
+        end
+      end
+    end
+
     context "the postcode doesn't exist in the database" do
       before do
         Postcode.where(postcode: normalised_postcode).destroy_all
