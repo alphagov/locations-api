@@ -10,9 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_06_05_101124) do
+ActiveRecord::Schema[8.0].define(version: 2025_01_23_162617) do
   # These are extensions that must be enabled in order to support this database
-  enable_extension "plpgsql"
+  enable_extension "pg_catalog.plpgsql"
+
+  create_table "imports", force: :cascade do |t|
+    t.string "url"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "postcodes", force: :cascade do |t|
     t.string "postcode"
@@ -25,5 +31,4 @@ ActiveRecord::Schema[7.1].define(version: 2023_06_05_101124) do
     t.index ["retired"], name: "index_postcodes_on_retired"
     t.index ["source"], name: "index_postcodes_on_source"
   end
-
 end
