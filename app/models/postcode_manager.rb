@@ -10,17 +10,19 @@ class PostcodeManager
 
   def update_postcode(postcode)
     normalised_postcode = PostcodeHelper.normalise(postcode)
-    record = Postcode.os_places.find_by(postcode: normalised_postcode)
+    record = Postcode.find_by(postcode: normalised_postcode)
     location_results = location_results_from_os_places_api(normalised_postcode)
     raise OsPlacesApi::NoResultsForPostcode if location_results.empty?
 
     if record
-      record.update(results: location_results.results) && record.touch
+      record.update(results: location_results.results, source: "os_places") && record.touch
     else
       Postcode.create!(postcode: normalised_postcode, source: "os_places", results: location_results.results)
     end
   rescue OsPlacesApi::NoResultsForPostcode
-    record.destroy if record
+    if record
+      record.source == "onspd" ? record.touch : record.destroy
+    end
   end
 
 private

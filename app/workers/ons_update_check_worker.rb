@@ -14,6 +14,7 @@ class OnsUpdateCheckWorker < OnsBaseWorker
         new_data_url = "https://www.arcgis.com/sharing/rest/content/items/#{arcgis_item_id(newest)}/data"
         Rails.logger.info("Updated ONSPD file: #{newest.title}")
         Rails.logger.info("Starting download from #{new_data_url}")
+        Import.create(url: new_data_url)
         OnsDownloadWorker.perform_async(new_data_url)
       end
     end
@@ -22,9 +23,9 @@ class OnsUpdateCheckWorker < OnsBaseWorker
 private
 
   def more_recent?(item)
-    return true unless Postcode.onspd.any?
+    return true unless Import.any?
 
-    item.pubDate > Postcode.onspd.maximum(:updated_at)
+    item.pubDate > Import.maximum(:created_at)
   end
 
   def arcgis_item_id(item)
