@@ -241,7 +241,6 @@ GEM
     net-protocol (0.2.2)
       timeout
     net-smtp (0.5.0)
-      net-protocol
     netrc (0.11.0)
     nio4r (2.7.4)
     nokogiri (1.18.2)
@@ -729,7 +728,7 @@ DEPENDENCIES
   webmock
 
 RUBY VERSION
-   ruby 3.3.1p55
+   ruby 3.4.1p0
 
 BUNDLED WITH
    2.3.24
