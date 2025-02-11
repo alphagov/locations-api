@@ -12,9 +12,7 @@ private
 
   def postcodes
     Postcode.uncached do
-      onspd_candidates = Postcode.onspd.active.order("updated_at ASC").select { |r| r.results.first["ONS"]["TYPE"] == "S" }.first(POSTCODES_PER_SECOND)
-      os_places_candidates = Postcode.os_places.order("updated_at ASC").first(POSTCODES_PER_SECOND)
-      (onspd_candidates + os_places_candidates).sort_by(&:updated_at).first(POSTCODES_PER_SECOND).pluck(:postcode)
+      Postcode.active.small.order("updated_at ASC").limit(POSTCODES_PER_SECOND).pluck(:postcode)
     end
   end
 end
