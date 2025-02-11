@@ -15,12 +15,14 @@ class OnsImportWorker < OnsBaseWorker
       next if Postcode.os_places.where(postcode:).any?
 
       termination_date = parse_termination_date(row["doterm"])
+      large_user_postcode = (row["usertype"] != "0")
+
       results = [
         {
           "ONS" => {
             "AVG_LNG" => row["long"],
             "AVG_LAT" => row["lat"],
-            "TYPE" => row["usertype"] == "0" ? "S" : "L",
+            "TYPE" => large_user_postcode ? "L" : "S",
             "DOTERM" => termination_date,
           },
         },
@@ -30,9 +32,9 @@ class OnsImportWorker < OnsBaseWorker
 
       existing_record = Postcode.onspd.find_by(postcode:)
       if existing_record
-        existing_record.update(retired:, results:)
+        existing_record.update(retired:, large_user_postcode:, results:)
       else
-        Postcode.create(postcode:, source: "onspd", retired:, results:)
+        Postcode.create(postcode:, source: "onspd", retired:, large_user_postcode:, results:)
       end
     end
   rescue StandardError => e
