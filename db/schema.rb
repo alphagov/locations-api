@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_01_23_162617) do
+ActiveRecord::Schema[8.0].define(version: 2025_02_11_143015) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -27,7 +27,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_23_162617) do
     t.datetime "updated_at", null: false
     t.string "source", default: "os_places", null: false
     t.boolean "retired", default: false, null: false
+    t.boolean "large_user_postcode", default: false, null: false
     t.index ["postcode"], name: "index_postcodes_on_postcode", unique: true
+    t.index ["retired", "large_user_postcode", "updated_at"], name: "idx_on_retired_large_user_postcode_updated_at_4195f25cc2"
     t.index ["retired"], name: "index_postcodes_on_retired"
     t.index ["source"], name: "index_postcodes_on_source"
   end

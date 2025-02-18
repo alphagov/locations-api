@@ -7,6 +7,9 @@ class Postcode < ApplicationRecord
   scope :active, -> { where(retired: false) }
   scope :retired, -> { where(retired: true) }
 
+  scope :small, -> { where(large_user_postcode: false) }
+  scope :large, -> { where(large_user_postcode: true) }
+
 private
 
   def normalize_postcode
