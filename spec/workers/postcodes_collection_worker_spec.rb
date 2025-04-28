@@ -20,7 +20,7 @@ RSpec.describe PostcodesCollectionWorker do
 
     context "when an ONSPD small active postcode is older than the oldest OS Places postcode" do
       before do
-        Postcode.create(postcode: "E12AA", source: "onspd", updated_at: 3.days.ago, results: [{ "ONS" => { "TYPE" => "S" } }])
+        Postcode.create(postcode: "E12AA", source: "onspd", updated_at: 3.days.ago)
       end
 
       it "adds the onspd postcode to the update checker" do
@@ -35,7 +35,7 @@ RSpec.describe PostcodesCollectionWorker do
 
     context "when an ONSPD small retired postcode is older than the oldest OS Places postcode" do
       before do
-        Postcode.create(postcode: "E12AA", source: "onspd", updated_at: 3.days.ago, results: [{ "ONS" => { "TYPE" => "S" } }], retired: true)
+        Postcode.create(postcode: "E12AA", source: "onspd", updated_at: 3.days.ago, retired: true)
       end
 
       it "does not attempt to update the ONSPD postcode" do
@@ -47,7 +47,7 @@ RSpec.describe PostcodesCollectionWorker do
 
     context "when an ONSPD large active postcode is older than the oldest OS Places postcode" do
       before do
-        Postcode.create(postcode: "E12AA", source: "onspd", updated_at: 3.days.ago, results: [{ "ONS" => { "TYPE" => "L" } }])
+        Postcode.create(postcode: "E12AA", source: "onspd", updated_at: 3.days.ago, large_user_postcode: true)
       end
 
       it "does not attempt to update the ONSPD postcode" do
