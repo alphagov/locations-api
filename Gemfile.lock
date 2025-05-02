@@ -520,7 +520,7 @@ GEM
     prism (1.4.0)
     prometheus_exporter (2.2.0)
       webrick
-    psych (5.2.3)
+    psych (5.2.4)
       date
       stringio
     public_suffix (6.0.1)
