@@ -132,11 +132,11 @@ GEM
       tzinfo
     expgen (0.1.1)
       parslet
-    factory_bot (6.5.0)
-      activesupport (>= 5.0.0)
-    factory_bot_rails (6.4.4)
+    factory_bot (6.5.4)
+      activesupport (>= 6.1.0)
+    factory_bot_rails (6.5.0)
       factory_bot (~> 6.5)
-      railties (>= 5.0.0)
+      railties (>= 6.1.0)
     ffi (1.16.3)
     find_a_port (1.0.1)
     fugit (1.11.1)
