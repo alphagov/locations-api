@@ -7,7 +7,7 @@ gem "rails", "8.1.1"
 gem "aws-sdk-s3"
 gem "bootsnap", require: false
 gem "gds-api-adapters"
-gem "govuk_app_config"
+gem "govuk_app_config", "9.22.0"
 gem "govuk_sidekiq"
 gem "httparty"
 gem "pact", require: false
