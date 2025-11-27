@@ -1,6 +1,6 @@
 class PostcodeValidator < ActiveModel::Validator
   VALID_POSTCODE = /^([A-Z]{1,2}[0-9][A-Z0-9]? ?[0-9][A-Z]{2})$/i
-  INVALID_POSTCODE = /^(BF|BX|GIR|XX|GY|JE|IM|AI|GX|VG)/i
+  INVALID_POSTCODE = /^(BF|BX|GIR|XX|AI|GX|VG)/i
   CAYMANS_POSTCODE = /^KY[0-9]-/i
 
   def validate(record)
