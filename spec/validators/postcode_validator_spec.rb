@@ -43,6 +43,10 @@ RSpec.describe PostcodeValidator do
       "CR2 6XH",
       "DN55 1PT",
       "KY11 4JU",
+      # Crown dependencies
+      "JE4 3ZZ",
+      "GY7 3ZZ",
+      "IM5 3ZZ",
     ]
   end
 
@@ -57,10 +61,6 @@ RSpec.describe PostcodeValidator do
       "AA1 12345",
       "AA1",
       "AAA 1AA",
-      # Crown dependencies
-      "JE4 3ZZ",
-      "GY7 3ZZ",
-      "IM5 3ZZ",
       # Non-geographic
       "GIR 0AA",
       "BF1",
