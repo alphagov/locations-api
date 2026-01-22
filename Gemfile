@@ -8,7 +8,7 @@ gem "aws-sdk-s3"
 gem "bootsnap", require: false
 gem "connection_pool", "< 4"
 gem "gds-api-adapters"
-gem "govuk_app_config", "9.23.3"
+gem "govuk_app_config", "9.23.4"
 gem "govuk_sidekiq"
 gem "httparty"
 gem "pact", require: false
