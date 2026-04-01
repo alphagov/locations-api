@@ -710,7 +710,7 @@ DEPENDENCIES
   govuk_test
   httparty
   listen
-  pact
+  pact (~> 1.67)
   pact_broker-client
   pg
   psych (< 6)
