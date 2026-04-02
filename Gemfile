@@ -11,7 +11,7 @@ gem "gds-api-adapters"
 gem "govuk_app_config", "9.23.7"
 gem "govuk_sidekiq"
 gem "httparty"
-gem "pact", require: false
+gem "pact", "~> 1.67", require: false
 gem "pact_broker-client"
 gem "pg"
 gem "psych", "<6"
