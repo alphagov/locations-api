@@ -131,7 +131,7 @@ GEM
     docile (1.4.0)
     domain_name (0.6.20240107)
     drb (2.2.3)
-    erb (6.0.2)
+    erb (6.0.3)
     erubi (1.13.1)
     et-orbi (1.2.11)
       tzinfo
@@ -169,7 +169,7 @@ GEM
       rake (~> 13.3)
     googleapis-common-protos-types (1.22.0)
       google-protobuf (~> 4.26)
-    govuk_app_config (9.23.9)
+    govuk_app_config (9.23.10)
       connection_pool (< 3)
       logstasher (~> 2.1)
       opentelemetry-exporter-otlp (>= 0.25, < 0.34)
@@ -485,7 +485,7 @@ GEM
     pg (1.6.3-aarch64-linux)
     pg (1.6.3-arm64-darwin)
     pg (1.6.3-x86_64-linux)
-    plek (5.3.0)
+    plek (5.3.1)
     pp (0.6.3)
       prettyprint
     prettyprint (0.2.0)
@@ -541,7 +541,7 @@ GEM
       tsort (>= 0.2)
       zeitwerk (~> 2.6)
     rainbow (3.1.1)
-    rake (13.4.1)
+    rake (13.4.2)
     rb-fsevent (0.11.2)
     rb-inotify (0.11.1)
       ffi (~> 1.0)
@@ -706,7 +706,7 @@ DEPENDENCIES
   connection_pool (< 4)
   factory_bot_rails
   gds-api-adapters
-  govuk_app_config (= 9.23.9)
+  govuk_app_config (= 9.23.10)
   govuk_sidekiq
   govuk_test
   httparty
