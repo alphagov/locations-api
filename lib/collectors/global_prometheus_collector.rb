@@ -21,7 +21,7 @@ module Collectors
     def get_oldest_postcode
       # Cache metric to prevent needless expensive calls to the database
       Rails.cache.fetch("metrics:oldest_postcode", expires_in: 1.hour) do
-        (Time.zone.now.to_i - Postcode.os_places.order(updated_at: :asc).first.updated_at.to_i)
+        Time.zone.now.to_i - Postcode.os_places.order(updated_at: :asc).first.updated_at.to_i
       end
     end
   end
