@@ -168,7 +168,7 @@ GEM
       rake (~> 13.3)
     googleapis-common-protos-types (1.22.0)
       google-protobuf (~> 4.26)
-    govuk_app_config (9.23.11)
+    govuk_app_config (9.24.0)
       connection_pool (< 3)
       logstasher (~> 2.1)
       opentelemetry-exporter-otlp (>= 0.25, < 0.34)
@@ -238,7 +238,7 @@ GEM
       mime-types-data (~> 3.2025, >= 3.2025.0507)
     mime-types-data (3.2026.0407)
     mini_mime (1.1.5)
-    minitest (6.0.4)
+    minitest (6.0.5)
       drb (~> 2.0)
       prism (~> 1.5)
     msgpack (1.8.0)
@@ -708,7 +708,7 @@ DEPENDENCIES
   connection_pool (< 4)
   factory_bot_rails
   gds-api-adapters
-  govuk_app_config (= 9.23.11)
+  govuk_app_config (= 9.24.0)
   govuk_sidekiq
   govuk_test
   httparty
