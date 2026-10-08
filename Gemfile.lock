@@ -127,7 +127,6 @@ GEM
     csv (3.3.6)
     date (3.5.1)
     diff-lcs (1.6.2)
-    dig_rb (1.0.1)
     domain_name (0.6.20260907)
     drb (2.2.3)
     erb (6.0.7)
@@ -241,7 +240,6 @@ GEM
     minitest (6.0.6)
       drb (~> 2.0)
       prism (~> 1.5)
-    mize (0.6.1)
     msgpack (1.8.4)
     multi_json (1.19.1)
     multi_xml (0.9.1)
@@ -439,7 +437,6 @@ GEM
       opentelemetry-semantic_conventions
     opentelemetry-semantic_conventions (1.44.0)
       opentelemetry-api (~> 1.0)
-    ostruct (0.6.3)
     pact (1.67.5)
       pact-mock_service (~> 3.0, >= 3.3.1)
       pact-support (~> 1.21, >= 1.21.2)
@@ -468,15 +465,6 @@ GEM
       jsonpath (~> 1.0)
       rainbow (~> 3.1.1)
       string_pattern (~> 2.0)
-    pact_broker-client (1.78.0)
-      base64 (~> 0.2)
-      dig_rb (~> 1.0)
-      httparty (>= 0.21.0, < 1.0.0)
-      ostruct
-      rake (~> 13.0)
-      table_print (~> 1.5)
-      term-ansicolor (~> 1.7)
-      thor (>= 0.20, < 2.0)
     parallel (1.28.0)
     parser (3.3.11.1)
       ast (~> 2.4.1)
@@ -554,8 +542,6 @@ GEM
       prism (>= 1.6.0)
       rbs (>= 4.0.0)
       tsort
-    readline (0.0.4)
-      reline
     redis-client (0.30.1)
       connection_pool
     regexp_parser (2.12.0)
@@ -667,17 +653,8 @@ GEM
     string_pattern (2.4.0)
       regexp_parser (~> 2.5, >= 2.5.0)
     stringio (3.2.0)
-    sync (0.5.0)
-    table_print (1.5.7)
-    term-ansicolor (1.11.3)
-      tins (~> 1)
     thor (1.5.0)
     timeout (0.6.1)
-    tins (1.54.0)
-      bigdecimal
-      mize (~> 0.6)
-      readline
-      sync
     tsort (0.2.0)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
@@ -719,7 +696,6 @@ DEPENDENCIES
   httparty
   listen
   pact (~> 1.67)
-  pact_broker-client
   pg
   psych (< 6)
   rails (= 8.1.4)
