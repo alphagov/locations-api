@@ -33,6 +33,7 @@ group :development, :test do
   gem "byebug"
   gem "climate_control"
   gem "govuk_test"
+  gem "pact-ffi", require: false
   gem "rspec-rails"
   gem "rubocop-govuk"
   gem "webmock"

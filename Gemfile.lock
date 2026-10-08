@@ -448,6 +448,12 @@ GEM
       thor (>= 0.20, < 2.0)
       webrick (~> 1.8)
       zeitwerk (~> 2.3)
+    pact-ffi (0.5.8.1-aarch64-linux)
+      ffi (~> 1.15)
+    pact-ffi (0.5.8.1-arm64-darwin)
+      ffi (~> 1.15)
+    pact-ffi (0.5.8.1-x86_64-linux)
+      ffi (~> 1.15)
     pact-mock_service (3.12.4)
       find_a_port (~> 1.0.1)
       json
@@ -696,6 +702,7 @@ DEPENDENCIES
   httparty
   listen
   pact (~> 1.67)
+  pact-ffi
   pg
   psych (< 6)
   rails (= 8.1.4)
