@@ -11,7 +11,6 @@ gem "gds-api-adapters"
 gem "govuk_app_config", "9.26.0"
 gem "govuk_sidekiq"
 gem "httparty"
-gem "pact", "~> 1.67", require: false
 gem "pg"
 gem "psych", "<6"
 gem "rss"
@@ -33,7 +32,8 @@ group :development, :test do
   gem "byebug"
   gem "climate_control"
   gem "govuk_test"
-  gem "pact-ffi", require: false
+  gem "pact", require: false
+  gem "rspec"
   gem "rspec-rails"
   gem "rubocop-govuk"
   gem "webmock"
