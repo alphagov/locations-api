@@ -6,12 +6,6 @@ require_relative "config/application"
 Rails.application.load_tasks
 
 begin
-  require "pact/tasks"
-rescue LoadError
-  # Pact isn't available in all environments
-end
-
-begin
   require "rspec/core/rake_task"
 
   RSpec::Core::RakeTask.new(:pact_verify_v2) do |task|
