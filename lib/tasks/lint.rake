@@ -1,6 +1,6 @@
 desc "Run all linters"
 task lint: :environment do
-  # :nocov:
+  # simplecov:disable
   sh "rubocop"
-  # :nocov:
+  # simplecov:enable
 end
