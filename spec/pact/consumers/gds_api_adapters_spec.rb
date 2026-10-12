@@ -2,11 +2,10 @@ ENV["PACT_DO_NOT_TRACK"] = "true"
 
 require File.expand_path("../../../config/environment", __dir__)
 
-require "pact/v2"
-require "pact/v2/rspec"
+require "pact/rspec"
 
-RSpec.describe "Verify pacts from GDS API Adapter", :pact_v2 do
-  Pact::V2.configure do |config|
+RSpec.describe "Verify pacts from GDS API Adapter", :pact do
+  Pact.configure do |config|
     config.before_provider_state_setup do
     end
 
