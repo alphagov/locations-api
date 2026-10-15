@@ -20,7 +20,7 @@ jobs:
   dependency-review:
     name: Dependency Review scan
     uses: alphagov/govuk-infrastructure/.github/workflows/dependency-review.yml@main
-  
+
   security-analysis:
     name: Security Analysis
     uses: alphagov/govuk-infrastructure/.github/workflows/brakeman.yml@main
@@ -63,7 +63,7 @@ jobs:
         env:
           RAILS_ENV: test
           TEST_DATABASE_URL: ${{ steps.setup-postgres.outputs.db-url }}
-        run: bundle exec rails db:setup
+        run: bundle exec rails db:create db:schema:load
 
       - name: Run RSpec
         env:
