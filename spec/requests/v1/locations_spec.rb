@@ -142,6 +142,7 @@ RSpec.describe "Locations V1 API" do
       it "Should return error when postcode is incorrect" do
         get "/v1/locations?postcode=#{postcode}"
 
+        expect(response.status).to eq 400
         expect(response.body).to eq expected_validation_response
       end
     end
@@ -150,6 +151,21 @@ RSpec.describe "Locations V1 API" do
       it "Should return error when postcode is not provided" do
         get "/v1/locations"
 
+        expect(response.status).to eq 400
+        expect(response.body).to eq expected_validation_response
+      end
+    end
+
+    context "Postcode is a crown dependency postcode" do
+      let(:postcode) { "JE1 1AA" }
+      let(:expected_validation_response) do
+        { errors: { postcode: ["No results found for given postcode"] } }.to_json
+      end
+
+      it "Should return a not found" do
+        get "/v1/locations?postcode=#{postcode}"
+
+        expect(response.status).to eq 404
         expect(response.body).to eq expected_validation_response
       end
     end

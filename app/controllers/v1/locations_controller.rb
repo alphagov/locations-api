@@ -17,11 +17,14 @@ module V1
   private
 
     def validate_postcode
-      @req = PostcodeChecker.new(postcode: params[:postcode])
+      category = Postcodes::Utils.categorise(params[:postcode])
+      return if category == Postcodes::Type::UK
 
-      unless @req.valid?(params[:postcode])
-        render_invalid
+      if category == Postcodes::Type::CROWN_DEPENDENCY
+        return render_not_found
       end
+
+      render_invalid
     end
 
     def render_invalid
