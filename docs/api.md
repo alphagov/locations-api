@@ -8,9 +8,16 @@ This is the primary interface for frontend apps to retrieve postcode-related dat
 
 ### `GET /v1/locations`
 
-Takes a `postcode` query string parameter (i.e. `/v1/locations?postcode=E18QS`). Returns JSON containing the average latitude and longitude for the postcode, and an array of addresses associated with the postcode.
+Takes a `postcode` query string parameter (i.e. `/v1/locations?postcode=E18QS`). On success returns a 200 code and JSON containing the source, average latitude and longitude for the postcode, a postcode cateogry, and an array of addresses associated with the postcode. Optionally there may be extra information.
 
-Each address has the following properties:
+`postcode_category` will be one of:
+
+- `RECOGNISED`: This postcode is in the OS Places Api database.
+- `NOT_RECOGNISED`: Only returned for 404 responses. The postcode is a potentially valid UK postcode, but is not in the OS Places API database or in the ONSPD postcode file. This may mean it's an extremely new postcode, or just a mistyped postcode
+- `CROWN_DEPENDENCY`: Only returned for 404 responses. The postcode is for Jersey, Guernsey, or the Isle of Man
+- `INVALID`: Only returned for 400 responses. The postcode could not be a valid UK postcode
+
+If addresses are returned, each address has the following properties:
 
 - `postcode` (which will be the santised version of the `postcode` parameter given)
 - `address` (full property address as a string)
@@ -18,12 +25,20 @@ Each address has the following properties:
 - `longitude` (float)
 - `local_custodian_code` (integer: the code identifying the local custodian responsible for maintaining this data)
 
-Example response:
+Error cases:
+- Returns 400 if the postcode is missing or malformed (ie could not possibly be a valid UK postcode)
+- Returns 404 if no results were found (for various reasons)
+
+Error cases will also return a JSON with errors, and 404 returns may also contain a postcode_category code for the postcode (which the api client may wish to use to return a more specific error to the end user)
+
+#### Example 200 response (to `/v1/locations?postcode=E18QS`):
 
 ```json
 {
+  "source": "Ordnance Survey",
   "average_latitude": 51.51446013333334,
   "average_longitude": -0.0730154,
+  "postcode_category": "RECOGNISED",
   "results": [
     {
       "postcode": "E1 8QS",
@@ -112,3 +127,62 @@ Example response:
   ]
 }
 ```
+
+This is a detailed postcode.
+
+#### Example 200 response (to `/v1/locations?postcode=AL11AA`):
+
+```json
+{
+  "source": "Office of National Statistics",
+  "average_latitude": 51.749090,
+  "average_longitude": -0.341314,
+  "postcode_category": "RECOGNISED",
+  "results": [],
+  "extra_information": {
+    "source": "ONS source updated infrequently",
+    "retired": "Postcode was retired in May 1994",
+    "large": "Postcode is a large user postcode"
+  }
+```
+
+This is a retired postcode, for which we don't have results, but we do have a lat/long.
+
+#### Example 400 response (to `/v1/locations?postcode=My+House+Address`):
+
+```json
+{
+  "errors": {
+    "postcode": [ "Invalid postcode provided" ]
+  },
+  "postcode_category": "INVALID",
+}
+```
+
+This is a completely invalid postcode.
+
+#### Example 404 response (to `/v1/locations?postcode=JE1+1AA`):
+
+```json
+{
+  "errors": {
+    "postcode": [ "No results found for given postcode" ],
+  },
+  "postcode_category": "CROWN_DEPENDENCY",
+}
+```
+
+This is a valid Jersey postcode, but we do not support lookups in Jersey.
+
+#### Example 404 response (to `/v1/locations?postcode=SW1A+2ZZ`):
+
+```json
+{
+  "errors": {
+    "postcode": [ "No results found for given postcode" ],
+  },
+  "postcode_category": "NOT_RECOGNISED",
+}
+```
+
+This is a postcode that _might_ be a UK postcode (it fits the pattern), but isn't in our database.
