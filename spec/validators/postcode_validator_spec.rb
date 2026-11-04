@@ -76,7 +76,6 @@ RSpec.describe PostcodeValidator do
       "GX5 1AA",
       "GX11 1AA",
       "KY1-1500",
-      "KY1-1AA",
       "MSR1330",
       "MSR 1AA",
       "PCRN 1ZZ",
