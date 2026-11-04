@@ -8,6 +8,7 @@ class OsPlacesLocationsPresenter < LocationsPresenter
       "average_longitude" => locations.sum(0.0, &:longitude) / locations.size.to_f,
       "average_latitude" => locations.sum(0.0, &:latitude) / locations.size.to_f,
       "results" => location_results.filtered_locations.map(&:to_hash),
+      "postcode_category" => "RECOGNISED",
     }
   end
 end

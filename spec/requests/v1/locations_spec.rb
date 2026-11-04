@@ -37,6 +37,7 @@ RSpec.describe "Locations V1 API" do
         "average_longitude" => -0.07298533333333333,
         "average_latitude" => 51.51446256666667,
         "results" => [Location.new(address1), Location.new(address2)],
+        "postcode_category" => "RECOGNISED",
       }
     end
 
@@ -67,6 +68,7 @@ RSpec.describe "Locations V1 API" do
           "extra_information" => {
             "source" => "ONS source updated infrequently",
           },
+          "postcode_category" => "RECOGNISED",
         }
       end
       let(:results) do
@@ -105,6 +107,7 @@ RSpec.describe "Locations V1 API" do
             "retired" => "Postcode was retired in April 2004",
             "large" => "Postcode is a large user postcode",
           },
+          "postcode_category" => "RECOGNISED",
         }
       end
       let(:results) do

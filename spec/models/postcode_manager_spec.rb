@@ -79,6 +79,7 @@ RSpec.describe PostcodeManager, type: :model do
             "average_longitude" => average_longitude,
             "results" => locations.map(&:to_hash),
             "source" => "Ordnance Survey",
+            "postcode_category" => "RECOGNISED",
           },
         )
       end
@@ -94,6 +95,7 @@ RSpec.describe PostcodeManager, type: :model do
             "average_longitude" => average_longitude,
             "results" => locations.map(&:to_hash),
             "source" => "Ordnance Survey",
+            "postcode_category" => "RECOGNISED",
           },
         )
       end

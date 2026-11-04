@@ -6,6 +6,7 @@ class OnspdLocationsPresenter < LocationsPresenter
       "average_latitude" => @postcode.results.first["ONS"]["AVG_LAT"].to_f,
       "results" => [],
       "extra_information" => extra_information,
+      "postcode_category" => "RECOGNISED",
     }
   end
 
