@@ -10,7 +10,7 @@ module V1
       rescue OsPlacesApi::InvalidPostcodeProvided
         render_invalid
       rescue OsPlacesApi::NoResultsForPostcode
-        render_not_found
+        render_not_found("NOT_RECOGNISED")
       end
     end
 
@@ -21,18 +21,24 @@ module V1
       return if category == Postcodes::Type::UK
 
       if category == Postcodes::Type::CROWN_DEPENDENCY
-        return render_not_found
+        return render_not_found("CROWN_DEPENDENCY")
       end
 
       render_invalid
     end
 
     def render_invalid
-      render json: { errors: { "postcode": ["Invalid postcode provided"] } }, status: 400
+      render json: {
+        errors: { "postcode": ["Invalid postcode provided"] },
+        postcode_category: "INVALID",
+      }, status: 400
     end
 
-    def render_not_found
-      render json: { errors: { "postcode": ["No results found for given postcode"] } }, status: 404
+    def render_not_found(postcode_category)
+      render json: {
+        errors: { "postcode": ["No results found for given postcode"] },
+        postcode_category:,
+      }, status: 404
     end
   end
 end
