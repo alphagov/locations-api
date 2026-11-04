@@ -8,9 +8,9 @@ module V1
       begin
         render json: PostcodeManager.new.locations_for_postcode(params[:postcode])
       rescue OsPlacesApi::InvalidPostcodeProvided
-        render json: { errors: { "postcode": ["Invalid postcode provided"] } }, status: 400
+        render_invalid
       rescue OsPlacesApi::NoResultsForPostcode
-        render json: { errors: { "postcode": ["No results found for given postcode"] } }, status: 404
+        render_not_found
       end
     end
 
@@ -20,8 +20,16 @@ module V1
       @req = PostcodeChecker.new(postcode: params[:postcode])
 
       unless @req.valid?(params[:postcode])
-        render json: { errors: @req.errors }, status: 400
+        render_invalid
       end
+    end
+
+    def render_invalid
+      render json: { errors: { "postcode": ["Invalid postcode provided"] } }, status: 400
+    end
+
+    def render_not_found
+      render json: { errors: { "postcode": ["No results found for given postcode"] } }, status: 404
     end
   end
 end

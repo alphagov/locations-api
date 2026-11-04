@@ -134,7 +134,7 @@ RSpec.describe "Locations V1 API" do
 
   context "Client request validation" do
     let(:expected_validation_response) do
-      { errors: { postcode: ["This postcode is invalid"] } }.to_json
+      { errors: { postcode: ["Invalid postcode provided"] } }.to_json
     end
 
     context "Postcode is incorrect" do
