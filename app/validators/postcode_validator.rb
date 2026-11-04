@@ -10,10 +10,10 @@ class PostcodeValidator < ActiveModel::Validator
   end
 
   def valid_postcode?(postcode)
-    PostcodeHelper.normalise(postcode).match?(VALID_POSTCODE)
+    Postcodes::Utils.normalise(postcode).match?(VALID_POSTCODE)
   end
 
   def invalid_postcode?(postcode)
-    PostcodeHelper.normalise(postcode).match?(INVALID_POSTCODE) || postcode.match?(CAYMANS_POSTCODE)
+    Postcodes::Utils.normalise(postcode).match?(INVALID_POSTCODE) || postcode.match?(CAYMANS_POSTCODE)
   end
 end

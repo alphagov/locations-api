@@ -3,7 +3,7 @@ module V1
     before_action :validate_postcode
 
     def index
-      Sentry.set_tags postcode: PostcodeHelper.normalise(params[:postcode])
+      Sentry.set_tags postcode: Postcodes::Utils.normalise(params[:postcode])
 
       begin
         render json: PostcodeManager.new.locations_for_postcode(params[:postcode])
