@@ -1,6 +1,6 @@
 class PostcodeManager
   def locations_for_postcode(postcode)
-    normalised_postcode = PostcodeHelper.normalise(postcode)
+    normalised_postcode = Postcodes::Utils.normalise(postcode)
     unless (record = Postcode.find_by(postcode: normalised_postcode))
       record = create_record_from_os_places_api(normalised_postcode)
     end
@@ -9,7 +9,7 @@ class PostcodeManager
   end
 
   def update_postcode(postcode)
-    normalised_postcode = PostcodeHelper.normalise(postcode)
+    normalised_postcode = Postcodes::Utils.normalise(postcode)
     record = Postcode.find_by(postcode: normalised_postcode)
     location_results = location_results_from_os_places_api(normalised_postcode)
     raise OsPlacesApi::NoResultsForPostcode if location_results.empty?

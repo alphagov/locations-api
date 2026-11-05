@@ -11,7 +11,7 @@ class OnsImportWorker < OnsBaseWorker
     )
 
     CSV.foreach(temp_csv_file.path, headers: true) do |row|
-      postcode = PostcodeHelper.normalise(row["pcds"])
+      postcode = Postcodes::Utils.normalise(row["pcds"])
       next if Postcode.os_places.where(postcode:).any?
 
       termination_date = parse_termination_date(row["doterm"])

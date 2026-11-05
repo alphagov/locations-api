@@ -13,6 +13,6 @@ class Postcode < ApplicationRecord
 private
 
   def normalize_postcode
-    self["postcode"] = PostcodeHelper.normalise(self["postcode"])
+    self["postcode"] = Postcodes::Utils.normalise(self["postcode"])
   end
 end

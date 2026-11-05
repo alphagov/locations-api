@@ -37,6 +37,7 @@ RSpec.describe "Locations V1 API" do
         "average_longitude" => -0.07298533333333333,
         "average_latitude" => 51.51446256666667,
         "results" => [Location.new(address1), Location.new(address2)],
+        "postcode_category" => "RECOGNISED",
       }
     end
 
@@ -67,6 +68,7 @@ RSpec.describe "Locations V1 API" do
           "extra_information" => {
             "source" => "ONS source updated infrequently",
           },
+          "postcode_category" => "RECOGNISED",
         }
       end
       let(:results) do
@@ -105,6 +107,7 @@ RSpec.describe "Locations V1 API" do
             "retired" => "Postcode was retired in April 2004",
             "large" => "Postcode is a large user postcode",
           },
+          "postcode_category" => "RECOGNISED",
         }
       end
       let(:results) do
@@ -134,7 +137,10 @@ RSpec.describe "Locations V1 API" do
 
   context "Client request validation" do
     let(:expected_validation_response) do
-      { errors: { postcode: ["This postcode is invalid"] } }.to_json
+      {
+        errors: { postcode: ["Invalid postcode provided"] },
+        postcode_category: "INVALID",
+      }.to_json
     end
 
     context "Postcode is incorrect" do
@@ -142,6 +148,7 @@ RSpec.describe "Locations V1 API" do
       it "Should return error when postcode is incorrect" do
         get "/v1/locations?postcode=#{postcode}"
 
+        expect(response.status).to eq 400
         expect(response.body).to eq expected_validation_response
       end
     end
@@ -150,6 +157,24 @@ RSpec.describe "Locations V1 API" do
       it "Should return error when postcode is not provided" do
         get "/v1/locations"
 
+        expect(response.status).to eq 400
+        expect(response.body).to eq expected_validation_response
+      end
+    end
+
+    context "Postcode is a crown dependency postcode" do
+      let(:postcode) { "JE1 1AA" }
+      let(:expected_validation_response) do
+        {
+          errors: { postcode: ["No results found for given postcode"] },
+          postcode_category: "CROWN_DEPENDENCY",
+        }.to_json
+      end
+
+      it "Should return a not found" do
+        get "/v1/locations?postcode=#{postcode}"
+
+        expect(response.status).to eq 404
         expect(response.body).to eq expected_validation_response
       end
     end
@@ -159,7 +184,10 @@ RSpec.describe "Locations V1 API" do
     let(:postcode) { "E1 8QS" }
     let(:normalised_postcode) { "E18QS" }
     let(:expected_validation_response) do
-      { errors: { postcode: ["No results found for given postcode"] } }.to_json
+      {
+        errors: { postcode: ["No results found for given postcode"] },
+        postcode_category: "NOT_RECOGNISED",
+      }.to_json
     end
 
     before do
@@ -185,7 +213,10 @@ RSpec.describe "Locations V1 API" do
     let(:postcode) { "AB12 3CD" }
     let(:normalised_postcode) { "AB123CD" }
     let(:expected_validation_response) do
-      { errors: { postcode: ["Invalid postcode provided"] } }.to_json
+      {
+        errors: { postcode: ["Invalid postcode provided"] },
+        postcode_category: "INVALID",
+      }.to_json
     end
 
     before do

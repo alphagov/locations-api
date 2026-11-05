@@ -1,7 +1,7 @@
 desc "Get info about a postcode"
 task :postcode_info, [:postcode] => :environment do |_, args|
   # TODO: Test if the URL is valid before kicking off?
-  postcode = Postcode.find_by(postcode: PostcodeHelper.normalise(args[:postcode]))
+  postcode = Postcode.find_by(postcode: Postcodes::Utils.normalise(args[:postcode]))
 
   if postcode
     puts("Postcode #{args[:postcode]}:")
