@@ -8,4 +8,9 @@ Rails.application.routes.draw do
   namespace :v1 do
     get "/locations", to: "locations#index"
   end
+
+  require "sidekiq/web"
+  require "sidekiq-scheduler/web"
+
+  mount Sidekiq::Web, at: "/sidekiq"
 end
