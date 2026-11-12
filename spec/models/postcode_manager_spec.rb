@@ -116,7 +116,7 @@ RSpec.describe PostcodeManager, type: :model do
 
         it "deletes the postcode record" do
           expect(Postcode.where(postcode: normalised_postcode).count).to eq(1)
-          postcode_manager.update_postcode(postcode)
+          expect(postcode_manager.update_postcode(postcode)).to eq("Postcode not found in OS Places API, deleting record")
           expect(Postcode.where(postcode: normalised_postcode).count).to eq(0)
         end
       end
@@ -128,7 +128,7 @@ RSpec.describe PostcodeManager, type: :model do
 
         it "deletes the postcode record" do
           expect(Postcode.where(postcode: normalised_postcode).count).to eq(1)
-          postcode_manager.update_postcode(postcode)
+          expect(postcode_manager.update_postcode(postcode)).to eq("Postcode not found in OS Places API, deleting record")
           expect(Postcode.where(postcode: normalised_postcode).count).to eq(0)
         end
       end
@@ -139,7 +139,7 @@ RSpec.describe PostcodeManager, type: :model do
         end
 
         it "updates the postcode record" do
-          postcode_manager.update_postcode(postcode)
+          expect(postcode_manager.update_postcode(postcode)).to eq("Postcode updated from OS Places API")
           expect(Postcode.where(postcode: normalised_postcode).first.results).to eq(os_places_api_results)
         end
       end
@@ -156,7 +156,7 @@ RSpec.describe PostcodeManager, type: :model do
         end
 
         it "touches the postcode record but does not update it" do
-          postcode_manager.update_postcode(postcode)
+          expect(postcode_manager.update_postcode(postcode)).to eq("Postcode not found in OS Places API, record is OSNPD data")
           record = Postcode.where(postcode: normalised_postcode).first
 
           expect(record.results).to eq([])
@@ -171,7 +171,7 @@ RSpec.describe PostcodeManager, type: :model do
         end
 
         it "touches the postcode record but does not update it" do
-          postcode_manager.update_postcode(postcode)
+          expect(postcode_manager.update_postcode(postcode)).to eq("Postcode not found in OS Places API, record is OSNPD data")
           record = Postcode.where(postcode: normalised_postcode).first
 
           expect(record.results).to eq([])
@@ -207,7 +207,7 @@ RSpec.describe PostcodeManager, type: :model do
         end
 
         it "does not create a postcode record" do
-          postcode_manager.update_postcode(postcode)
+          expect(postcode_manager.update_postcode(postcode)).to eq("Postcode not found in OS Places API")
           expect(Postcode.where(postcode: normalised_postcode).count).to eq(0)
         end
       end
@@ -218,7 +218,7 @@ RSpec.describe PostcodeManager, type: :model do
         end
 
         it "creates a postcode record" do
-          postcode_manager.update_postcode(postcode)
+          expect(postcode_manager.update_postcode(postcode)).to eq("Postcode created from OS Places API")
           expect(Postcode.where(postcode: normalised_postcode).count).to eq(1)
         end
       end
