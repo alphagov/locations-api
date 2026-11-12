@@ -1,9 +1,10 @@
 require "spec_helper"
 
 RSpec.describe PostcodeManager, type: :model do
+  subject(:postcode_manager) { described_class.new }
+
   let(:postcode) { "E1 8QS" }
   let(:normalised_postcode) { "E18QS" }
-  let(:postcode_manager) { PostcodeManager.new }
 
   before do
     mock_access_token_manager
