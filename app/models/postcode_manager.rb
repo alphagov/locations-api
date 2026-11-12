@@ -16,12 +16,20 @@ class PostcodeManager
 
     if record
       record.update(results: location_results.results, source: "os_places") && record.touch
+      "Postcode updated from OS Places API"
     else
       Postcode.create!(postcode: normalised_postcode, source: "os_places", results: location_results.results)
+      "Postcode created from OS Places API"
     end
   rescue OsPlacesApi::NoResultsForPostcode
-    if record
-      record.source == "onspd" ? record.touch : record.destroy
+    if record && record.source == "onspd"
+      record.touch
+      "Postcode not found in OS Places API, record is OSNPD data"
+    elsif record
+      record.destroy
+      "Postcode not found in OS Places API, deleting record"
+    else
+      "Postcode not found in OS Places API"
     end
   end
 
