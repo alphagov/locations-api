@@ -15,7 +15,7 @@ class PostcodeManager
     raise OsPlacesApi::NoResultsForPostcode if location_results.empty?
 
     if record
-      record.update(results: location_results.results, source: "os_places") && record.touch
+      record.update(results: location_results.results, source: "os_places", retired: false, large_user_postcode: false) && record.touch
       "Postcode updated from OS Places API"
     else
       Postcode.create!(postcode: normalised_postcode, source: "os_places", results: location_results.results)
