@@ -147,7 +147,7 @@ RSpec.describe PostcodeManager, type: :model do
 
     context "the postcode exists in the database as onspd record" do
       before do
-        Postcode.create!(postcode: normalised_postcode, source: "onspd", results: [], updated_at: 1.day.ago)
+        Postcode.create!(postcode: normalised_postcode, source: "onspd", results: [], updated_at: 1.day.ago, retired: true, large_user_postcode: true)
       end
 
       context "the api returns no results" do
@@ -192,6 +192,8 @@ RSpec.describe PostcodeManager, type: :model do
           expect(record.results).to eq(os_places_api_results)
           expect(record.updated_at).to be_within(1.minute).of(Time.zone.now)
           expect(record.source).to eq("os_places")
+          expect(record.retired).to be false
+          expect(record.large_user_postcode).to be false
         end
       end
     end
