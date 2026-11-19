@@ -75,7 +75,7 @@ GEM
       securerandom (>= 0.3)
       tzinfo (~> 2.0, >= 2.0.5)
       uri (>= 0.13.1)
-    addressable (2.9.1)
+    addressable (2.9.2)
       public_suffix (>= 2.0.2, < 8.0)
     ast (2.4.3)
     aws-eventstream (1.4.1)
@@ -126,7 +126,7 @@ GEM
     csv (3.3.6)
     date (3.6.0)
     diff-lcs (1.6.2)
-    domain_name (0.6.20260907)
+    domain_name (0.7.20261117)
     drb (2.2.3)
     erb (6.0.7)
     erubi (1.13.1)
@@ -137,13 +137,14 @@ GEM
     factory_bot_rails (6.5.1)
       factory_bot (~> 6.5)
       railties (>= 6.1.0)
+    ffi (1.17.4)
     ffi (1.17.4-aarch64-linux-gnu)
     ffi (1.17.4-arm64-darwin)
     ffi (1.17.4-x86_64-linux-gnu)
     fugit (1.12.1)
       et-orbi (~> 1.4)
       raabro (~> 1.4)
-    gds-api-adapters (103.5.0)
+    gds-api-adapters (104.0.0)
       addressable
       link_header
       null_logger
@@ -152,6 +153,9 @@ GEM
       rest-client (~> 2.0)
     globalid (1.4.0)
       activesupport (>= 6.1)
+    google-protobuf (4.36.2)
+      bigdecimal
+      rake (~> 13.3)
     google-protobuf (4.36.2-aarch64-linux-gnu)
       bigdecimal
       rake (~> 13.3)
@@ -229,8 +233,9 @@ GEM
     mime-types (3.7.0)
       logger
       mime-types-data (~> 3.2025, >= 3.2025.0507)
-    mime-types-data (3.2026.0701)
+    mime-types-data (3.2026.1103)
     mini_mime (1.1.5)
+    mini_portile2 (2.8.9)
     minitest (6.1.0)
       drb (~> 2.0)
       prism (>= 1.5, < 3)
@@ -248,6 +253,9 @@ GEM
       net-protocol
     netrc (0.11.0)
     nio4r (2.7.5)
+    nokogiri (1.19.7)
+      mini_portile2 (~> 2.8.2)
+      racc (~> 1.4)
     nokogiri (1.19.7-aarch64-linux-gnu)
       racc (~> 1.4)
     nokogiri (1.19.7-arm64-darwin)
@@ -452,6 +460,7 @@ GEM
     parser (3.3.11.1)
       ast (~> 2.4.1)
       racc
+    pg (1.7.0)
     pg (1.7.0-aarch64-linux)
     pg (1.7.0-arm64-darwin)
     pg (1.7.0-x86_64-linux)
